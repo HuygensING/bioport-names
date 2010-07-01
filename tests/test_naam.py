@@ -9,9 +9,6 @@ class NaamTestCase(TestCase):
 
     def tearDown(self):
         pass
-#        src_id = 'test'
-#        doc = NamenIndexAcquisition(id=src_id)
-#        doc.delete_from_db()
  
     def test_sanity(self):
         return
