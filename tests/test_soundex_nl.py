@@ -6,6 +6,8 @@ from names.name import Name
 from lxml import etree
 from names.common import *
 from names.soundex import soundex_nl, soundexes_nl
+
+
 class SoundexNLTestCase(TestCase):
 
     def test_soundex_nl1(self):
@@ -37,10 +39,7 @@ class SoundexNLTestCase(TestCase):
     def test_soundex_nl2(self):
         def soundex_nl2(s, length=-1):
             return soundex_nl(s, length, group=2)
-        
-        
-        # group 2 is de "fonetische soundex"
-        
+        # group 2 is de "fonetische soundex"       
         #c
         for s, wanted in [
             #examples of soundex expressoins
@@ -122,5 +121,14 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(soundexes_nl('don*er', wildcards=True) , ['don*er'])
         self.assertEqual(soundexes_nl('willem I' ) , ['i', 'filem' ])
         self.assertEqual(soundexes_nl('heer' ) , [])
+        
+        
 if __name__ == "__main__":
-    unittest.main()
+    test_suite = unittest.TestSuite()
+    tests = [SoundexNLTestCase]
+    for test in tests:
+        test_suite.addTest(unittest.makeSuite(test))
+    unittest.TextTestRunner(verbosity=2).run(test_suite)
+
+    
+

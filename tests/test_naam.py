@@ -1,11 +1,16 @@
-#! /usr/bin/python    
-#encoding=utf-8
-from unittest import TestCase, TestSuite, main, makeSuite
+#! /usr/bin/env python    
+# encoding=utf8
+
+import unittest
+
 from names.name import Name
 from lxml import etree
 from names.common import *
-Naam=Name
-class NaamTestCase(TestCase):
+
+
+Naam = Name
+
+class NaamTestCase(unittest.TestCase):
 
     def tearDown(self):
         pass
@@ -350,4 +355,10 @@ def test_suite():
 
 
 if __name__=='__main__':
-    main(defaultTest='test_suite')
+    test_suite = unittest.TestSuite()
+    tests = [NaamTestCase]
+    for test in tests:
+        test_suite.addTest(unittest.makeSuite(test))
+    unittest.TextTestRunner(verbosity=2).run(test_suite)
+
+
