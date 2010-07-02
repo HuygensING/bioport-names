@@ -29,7 +29,7 @@ class Name(object):
             self.from_args(**args)
    
     def __str__(self):
-#        return self.volledige_naam()
+        return self.volledige_naam()
         return "<Naam: '%s'>" %  self.to_string()
     
     def __repr__(self):
