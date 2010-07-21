@@ -79,9 +79,9 @@ def encodable(s, encoding):
         s = unicode(s)
     try:
         s.encode(encoding)
-        return 1
+        return True 
     except:
-        return 0
+        return False 
 
 def coerce_to_ascii(s):
     """try to make the string ascii, by replacing á and à with "a" (etc)"""
@@ -200,11 +200,13 @@ def to_ascii(s):
         while s:
             c, s = (s[0], s[1:])
             if c == '&':
-                assert ';' in s, s
-                c, s = s.split(';', 1)
-                if c in name2codepoint:
-                    c = name2codepoint[c] 
-                c = unichr(int(c))
+                if not ';' in s:
+                    pass
+                else:
+	                c, s = s.split(';', 1)
+	                if c in name2codepoint:
+	                    c = name2codepoint[c] 
+	                c = unichr(int(c))
             try:
                 new_c = special_chars[c]
             except KeyError:
