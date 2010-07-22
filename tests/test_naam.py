@@ -200,6 +200,10 @@ class NaamTestCase(unittest.TestCase):
         self.assertEqual(naam.guess_normal_form(), 'Johan VII')
         self.assertEqual(naam.guess_normal_form2(), 'Johan VII')
         
+        naam = Naam('Lodewijk XVIII')   
+        self.assertEqual(naam.guess_normal_form2(), 'Lodewijk XVIII')
+        
+        
         s = """<persName> <name type="voornaam">Trijn</name> <name type="intrapositie">van</name> <name type="geslachtsnaam">Leemput</name></persName>"""
         naam = Naam().from_string(s)
         

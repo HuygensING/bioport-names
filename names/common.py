@@ -287,27 +287,28 @@ ROMANS = [
     r'XV',
     r'XVI',
     r'XVII',
+    r'XVIII',
+    r'XIX',
+    r'XX',
 ]
 
 TERRITORIALE_TITELS = [
     r'graaf',
     r'gravin',
-    r'keizer', 
-    r'keizerin',
-    r'prince',
-    r'princess',
-    r'koning',
-    r'koningin',
-    r'heer',
     r'grootvorstin',
-    r'vorst',
+    r'heer',
     r'jhr', 
     r'jhr.',
     r'jonkheer',
+    r'keizer', 
+    r'keizerin',
+    r'koning',
+    r'koningin',
+    r'prince',
+    r'princess',
     r'prins', 
     r'prinses',
-    
-                       
+    r'vorst',
 ]
 
 STOP_WORDS = [] + PREFIXES + VOORVOEGSELS + TUSSENVOEGSELS + POSTFIXES + ROMANS + \
