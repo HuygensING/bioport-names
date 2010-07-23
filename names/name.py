@@ -49,7 +49,7 @@ class Name(object):
         self._root = Element('persName')
         last_element = None
         if volledige_naam:
-            volledige_naam = html2unicode(volledige_naam)
+#            volledige_naam = html2unicode(volledige_naam)
             self._root.text = volledige_naam
 #            self._insert_constituent('geslachtsnaam', args.get('geslachtsnaam'))
             for c in self._constituents:
@@ -67,17 +67,23 @@ class Name(object):
                     last_element = el                
         else:
             for c in self._constituents:
-                
                 if args.get(c):
                     el = SubElement(self._root, 'name')
                     el.set('type', c)
-                    el.text = html2unicode(args.get(c))
+                    el.text = args.get(c)
+#                    el.text = html2unicode(args.get(c))
                     if last_element is not None:
                         last_element.tail = ' '
                     last_element = el
 
         return self
 
+    def html2unicode(self):
+        """convert all html-type character codes to proper unicode"""
+        s = self.to_string()
+        s = html2unicode(s)
+        self.from_string(s)
+        return self
     def _insert_constituent(self, type, s):
         """tag the substring s of volledige_naam as being of type type
         
@@ -169,7 +175,6 @@ class Name(object):
         self.territoriale_titel = None
         
         for t in TERRITORIALE_TITELS:
-            
             if t in s:
                 self.territoriale_titel = s[s.find(t):]
                 self.territoriale_titel= self.territoriale_titel.strip()
@@ -439,25 +444,10 @@ class Name(object):
         else:
             rest = self.serialize(exclude=['geslachtsnaam']).strip()
             if rest:
-            
 		        s = '%s, %s' % (last_name, rest)
             else:
                 s = last_name
-#            start = s.rfind(last_name)
-#            if start > -1:
-#	            rest = '%s %s' % (s[:start], s[start + len(last_name):])
-#	            rest = rest.replace(',', '')
-#	            rest = rest.replace('  ', ' ')
-#	            rest = rest.strip()
-#	            if rest:
-#	                s = u'%s, %s' % (last_name,  rest)
-#	            else:
-#	                s = unicode(last_name)
-#            else:
-#                s =  unicode(last_name)
-#        else:
-#            s = self.serialize()
-#            
+                
         s = remove_parenthesized(s)
         result = fix_capitals(s)
         return result

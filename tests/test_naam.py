@@ -51,6 +51,7 @@ class NaamTestCase(unittest.TestCase):
             
     def test_html_codes(self):
         n = Naam('W&eacute;l?')
+        n.html2unicode()
         self.assertEqual( n.volledige_naam(), u'Wél?')
         
     def test_strip_tussenvoegsels(self):
@@ -238,11 +239,16 @@ class NaamTestCase(unittest.TestCase):
         naam = Naam(voornaam='Hendrik IV')
         self.assertEqual(naam.get_volledige_naam(), u'Hendrik IV')
    
-    def test_html2unicode(self):
+    def test_html2unicode(self): 
+        s = u'M&ouml;törhead'
+        n = Naam(s)
+        self.assertEqual(n.volledige_naam(), s)
+        n.html2unicode()
+        self.assertEqual(n.volledige_naam(), u'Mötörhead')
+        
         #this shoudl not be here, but under a separate test for the utility functions in common
         self.assertEqual(html2unicode('&eacute;'), u'é')
         self.assertEqual(html2unicode('S&atilde;o'), u'São')
-        
     def test_sort_key(self):
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
         n = Naam().from_string(s)
@@ -257,6 +263,7 @@ class NaamTestCase(unittest.TestCase):
         self.assertEqual(n.sort_key().split()[0], 'sao')
         
         n = Naam(u'S&atilde;o Jo&atilde;o')
+        n.html2unicode()
         self.assertEqual(n.sort_key().split()[0], 'sao')
        
         n = Naam('(Hans) Christian')
@@ -305,7 +312,8 @@ class NaamTestCase(unittest.TestCase):
         self.assertEqual(Naam('aearssen-walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Naam('aearssen,walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Naam('XXX').soundex_nl(), ['k'])
-        
+    
+
     def test_init(self):
         naam = Naam(
             prepositie=None,

@@ -155,7 +155,6 @@ class Similarity(object):
             try:
                 ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())
             except:
-                import pdb;pdb.set_trace() 
                 raise
             weight_initials = weight_initials_if_one_name_is_in_initials
         elif len(n1.initials()) > 1 and len(n2.initials()) > 1:
