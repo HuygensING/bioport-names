@@ -132,12 +132,23 @@ class Name(object):
     
     @instance.clearafter
     def from_string(self, s):
-        self.from_xml(etree.fromstring(s))
+        try:
+	        element =  etree.fromstring(s)
+        except etree.XMLSyntaxError, err:
+#            import pdb;pdb.set_trace()
+            if 'Entity' in err.message:
+	            #the string contains HTML Entities (probably)
+	            #and we provide some robustness by converting it to unicode
+                s = html2unicode(s)
+                element = etree.fromstring(s)
+            else:
+                raise 
+        self.from_xml(element)
         return self
     
     @instance.clearafter
     def from_soup(self, s, hints=()):
-        """als de input echt een troepje is, gebruik dan deze functie om de naam de instantieren"""
+        """if the input is really messy, this function should be more forgivable"""
         self.source_string = s
         self.birth = None
         self.death = None
@@ -234,6 +245,11 @@ class Name(object):
             if base.startswith(s):
                 base = base[len(s):]
 
+        ls = base.split()
+        for s in TUSSENVOEGSELS:
+            if ls[0] == s:
+                base = ' '.join(ls[1:])
+                
         for s in '?.-': #if the name starts with any of these characters, it comes last (not first)
             if base.startswith(s):
                 base = chr(126) + base 
@@ -288,16 +304,18 @@ class Name(object):
         returns: 
             a substring of s
         """
-        naam = s
         #XXX  this is very primitive
+        naam = s
             
-        #alle woorden die tussen haakjes staan zijn niet de achternaam, en filteren we er uit
-        #(maar de haakjes in "Ha(c)ks" blijven staan)
+        #anything between brackets is NOT a last name
+        #(but we leave the brackets in "Ha(c)ks" blijven staan)
         naam = re.sub(r'(?<!\w)\(.*?\)', '', naam)
         naam = naam.strip()
                
         if ', ' in naam: #als er een komma in de naam staat, dan is dat wat voor de komma staat de achternaam
-            guessed_naam = naam.split(',')[0] 
+            guessed_naam = naam.split(', ')[0] 
+        elif ' - ' in naam: #a real use case: "Hees - B.P. van"
+            guessed_naam = naam.split(' - ')[0] 
         elif 'startswithgeslachtsnaam' in hints: #er staat geen komma (ofzo) in, maar we weten wel dat de naam
             #met een achternaam begint: dan moet het wel de hele string zijn
             guessed_naam = naam 
@@ -436,6 +454,7 @@ class Name(object):
         self.guess_geslachtsnaam(change_xml=change_xml)
         
         last_name = self.geslachtsnaam()
+        
         n = self._root
         if not last_name:
             s = self.serialize()
