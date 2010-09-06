@@ -1,18 +1,17 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
-import unicodedata, re
+
+import unicodedata
+import re
+
 from htmlentitydefs import name2codepoint
+
+
 class TypeChecker:
+
     def is_url(self, s):
         return s.startswith('http://')
     
-    def is_date(self, s):
-        result = True
-        for part in s.split('-'):
-            result = result and part.isdigit()
-        return result
-    
-        
 def to_ymd(s):
     """take a string of the form "YYYY-MM-DD" (or "YYYY"), terurn a tuple (year, month, date) of three integers"""
     if not s:
