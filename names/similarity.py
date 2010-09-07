@@ -209,3 +209,5 @@ class Similarity(object):
 
     def explain_ratio(self, n1, n2):
         return self.ratio(n1, n1, explain=1) 
+    
+

@@ -159,28 +159,35 @@ html_codes = {
      r'&uacute;':r'ue', 
               }
 def fix_capitals(s):
-    #alles wat in HOOFDLETTERS staat wordt Hoofdletters, behavle tussenvoegsels en romans
+    """Everything that is an CAPITALS becomes Capitals
+    except romans and TUSSENVOEGSELS
+    """
+    
     result = ''
-    for s in s.split():
-        if s == s.lower():
+    
+    for w in re.findall('\w+[^\w]*', s, re.UNICODE):
+        if w == w.lower():
             pass
-        elif s in ROMANS + TUSSENVOEGSELS:
+        elif w in ROMANS + TUSSENVOEGSELS:
             pass
-        elif u'.' in s:
+        elif u'.' in w:
             pass
-        elif s.startswith('IJ'):
-            s = 'IJ' + s[len('IJ'):]
+        elif w.startswith('IJ'):
+            w = 'IJ' + s[len('IJ'):]
         else:
-            s =  s.capitalize()
-        result += ' '  + s
+            w = w.capitalize()
+        result += w
     result = result.strip()
     return result
 
 def remove_parenthesized(s):
-    #alles wat tussen haakjes staat gaat er uit
+    """remove everything between parentheses"""
     s = re.sub('\(.*?\)', '', s)
+    s = remove_double_spaces(s)
     return s
-
+def remove_double_spaces(s):
+    s = re.sub('\s+', ' ', s)
+    return s
 def to_ascii(s):
     """return ascii version of character
     

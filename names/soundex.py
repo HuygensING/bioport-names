@@ -3,7 +3,7 @@ from common import *
 
  
  
-
+#GROUPS1 defines the 'loose' soundex expression - many words have the same expression
 GROUPS1 = (
             ('' ,['[^a-z]', 'en$', '^h']), #alleen alfabetische characters, strip h at start 
 #            ('', [r'^%s' % s for s in PREFIXES + ['h']]), 
@@ -22,30 +22,48 @@ GROUPS1 = (
          #   ('', '1234567890')
 )
 
+#GROUPS2 defines a somewhat stricter soundex expression than GROUPS1 - fewer words have the same expression
 GROUPS2 = (
-            ('' ,['[^a-z\?\*]']), #, 'en$', 'us$']), #remove all non-alphabetical characters, remove postfixes 'en' and 'us'
+            ('' ,['[^a-z\?\*]']), # #remove all non-alphabetical characters, 
 #            ('' ,[r'\(', r'\)']),  #remove brackets (
-            ('6',['ouw', 'auw', 'ou', 'au' ]), 
-            ('1',['ah', 'ae','aa','a']), 
-            ('2',['ee', 'eh',]),
-            ('3',['eij',  'ey', 'ij', 'i',  'y','ei', 'ie']),
+            ('end', ['eind$',]), #are we sure we ant to do this?
+            ('boom', ['baum'],), #are we sure we want to do this? 
+            ('huis', ['haus'],),
+            ('berg', ('burg',)),
+            ('woud', ('wold',)),
+            ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
+            ('na', ['naar$',]),
+            ('', ('(?<=der)s$',)),
+            ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
+            ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
+            ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant
+            ('', ('(?<=..[bdfgjklmnprstvwzy])e$',)), #e at the aned of a word preceded by a consonant
+#            ('', ('(?<=en)s$',)),
+            ('', ('(?<=...)ens$',)),
+            ('', ('(?<=.....)a$',)),
+            ('em', ('(?<=.)um$',)),
+            ('e', ['en(?=[bdfklmnpqrstvwz][^s].)',]), #tussen -n
+            ('7',['uy','uij', 'ui', ]), #'(?<=[^o])oij',  '(?<=[^o])oi', ]), 
+            ('6',['ouw','aauw', 'auw', 'ou', 'au',  ]), #these become 'au' 
+            ('5',['ue', 'uu','uh', ]), #these become 'u'
+            ('4',['oh', 'oo', 'oe' , ]), #these come 'o' 
+            ('1',['ah', 'ae','aa','a']), #these become 'a' 
+            ('3',['eij',  'ey', 'ij', 'ie', 'i',  'y','eei', 'ei', 'ie']), #these become 'i'
+            ('2',['ee', 'eh','e', '(?<=.)a$']), #a at the and of a word longer than 1 char) these become 'e'
 #            ('ei', ['eij', 'ey', 'y']), 
-            ('4',['oh', 'oo', 'oe' , ]), 
-            ('5',['ue', 'uu', ]), 
-#            ('ui',['uy', ]), 
-            ('s',['z', 'ss', '(?<!^)sch']), #match 'sch' except when it is the start of the string 
+            ('s',['z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
             ('p',['pp']), 
             ('b',['bb']), 
-            ('g',['ch', 'gg', 'gh']), 
+            ('g',['ch', 'gg', 'gh', 'ng']), 
             ('qu', ['kw']),
             ('x', ['ks'],),
             ('k',['c', 'x', 'kk', ]),
-            ('t',[ 'tt', 'd$', 'dt$', 'th',]),
+            ('t',[ 'tt', 'd$', 'dt$', 'th','d(?=s)','(?<=n)dt','(?<=n)d',]),
             ('d',[ 'dd']),
             ('f',['ph', 'v', 'w', 'ff']),
 #            ('h',[]),
             ('l',['ll']),
-            ('n',['nn']), 
+            ('n',['nn', ]), 
             ('m',['mm']), 
             ('r',['rh', 'rr'] ), 
             ('a', '1',),
@@ -54,6 +72,7 @@ GROUPS2 = (
             ('o', '4'),
             ('u', '5'),
             ('au', '6'),
+            ('ui', '7'),
             
 #            ('', '1234567890')
 )
@@ -138,11 +157,16 @@ def soundex_nl(s, length=4, group=1, wildcards=False):
         - groep 2: identify somewhat less (stay close to actual phonetics)
         
     """
+    #ignore Romans
+    if s in ROMANS:
+        return s
+    
     s = s.lower()
     s = to_ascii(s)
     if not wildcards:
         #remove 'wildcard' characters
         s = re.sub('[\?\*]', '', s)
+
 
     #strip of certain prefixes
     #XXX this shoudl be in the regular expression specs
