@@ -1,0 +1,4 @@
+include CHANGES.txt MANIFEST MANIFEST.in
+recursive-include names *
+recursive-include tests *
+global-exclude *.pyc *.pyo *.exe  *.swp
