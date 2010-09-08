@@ -165,7 +165,7 @@ def fix_capitals(s):
     
     result = ''
     
-    for w in re.findall('\w+[^\w]*', s, re.UNICODE):
+    for w, rest in re.findall('(\w+)([^\w]*)', s, re.UNICODE):
         if w == w.lower():
             pass
         elif w in ROMANS + TUSSENVOEGSELS:
@@ -176,7 +176,7 @@ def fix_capitals(s):
             w = 'IJ' + s[len('IJ'):]
         else:
             w = w.capitalize()
-        result += w
+        result += w + rest
     result = result.strip()
     return result
 
@@ -310,6 +310,8 @@ TERRITORIALE_TITELS = [
     r'keizerin',
     r'koning',
     r'koningin',
+    r'mr',
+    r'mr.',
     r'prince',
     r'princess',
     r'prins', 

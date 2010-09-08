@@ -179,7 +179,7 @@ class Name(object):
                         for c in [u'±']:
                             if d.startswith(c):
                                     d = s[len(c):]
-                        if not TypeChecker().is_date(d):
+                        if not is_date(d):
                             d = None
                     setattr(self, att, d)
         #territoriale titels

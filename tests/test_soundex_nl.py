@@ -138,10 +138,11 @@ class SoundexNLTestCase(TestCase):
                 s2 = soundex_nl2(n2)
                 self.assertEqual(s1, s2, '%s=>%s ::: %s=>%s' %( n1, s1, n2, s2))
    
-        #THESE GET DIFFERENT SOUNDEXES
+    def test_different_soundexes(self):
         for n1, n2 in [
-            #these names shoudl generate the same soundex expression
+            #these strings shoudl generate different soundex expression
             ('x', 'y'),
+            ('gaag', 'goch'),
 #            ('leeuwen', 'leuven'),
             ]:
             s1 = soundex_nl2(n1)
@@ -155,6 +156,7 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(soundexes_nl('don*er', wildcards=True) , ['don*er'])
         self.assertEqual(soundexes_nl('willem I' ) , ['i', 'filem' ])
         self.assertEqual(soundexes_nl('heer' ) , [])
+        self.assertEqual(soundexes_nl('jhr.' ) , [])
         
         
 def soundex_nl2(s, length=-1):

@@ -4,6 +4,7 @@ setup(name = 'names',
       version = '0.2.1dev',
       packages = ['names'],
       install_requires=['python-Levenshtein',
+                        'lxml',
                        ]
       )
 

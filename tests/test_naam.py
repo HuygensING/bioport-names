@@ -73,26 +73,26 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.geslachtsnaam(), 'Gerbrandy')
         self.assertEqual(n.to_string(), s)
 
-    def test_from_soup(self):
-        #n = Name().from_soup('Ada, gravin van Holland (1185-1223)')
-        n = Name().from_soup(u'Ada, gravin van Holland (±1185‑1223)')
-        
-        self.assertEqual(n.death, '1223', )
-        self.assertEqual(n.birth, None,n.birth)
-        self.assertEqual(n.territoriale_titel, 'gravin van Holland', n.to_string())
-        self.assertEqual(n.get_volledige_naam(), 'Ada')
-        
-        n = Name().from_soup('Xerxes, koning van Perzië 486‑465</territoriale_titel>')
-        self.assertEqual(n.get_volledige_naam(), 'Xerxes')
-        n.guess_geslachtsnaam()
-        self.assertEqual(n.get_volledige_naam(), 'Xerxes')
-        self.assertEqual(n.guess_normal_form(), 'Xerxes')
-        
-        n= Name().from_soup(u'Aäron')
-        self.assertEqual(n.guess_normal_form(), u'Aäron')
-        n= Name(u'Willem II')
-        self.assertEqual(n.guess_normal_form(), u'Willem II')
-        self.assertEqual(type(n.guess_normal_form()), type(u'Willem II'))
+#    def test_from_soup(self):
+#        #n = Name().from_soup('Ada, gravin van Holland (1185-1223)')
+#        n = Name().from_soup(u'Ada, gravin van Holland (±1185‑1223)')
+#        
+#        self.assertEqual(n.death, '1223', )
+#        self.assertEqual(n.birth, None,n.birth)
+#        self.assertEqual(n.territoriale_titel, 'gravin van Holland', n.to_string())
+#        self.assertEqual(n.get_volledige_naam(), 'Ada')
+#        
+#        n = Name().from_soup('Xerxes, koning van Perzië 486‑465</territoriale_titel>')
+#        self.assertEqual(n.get_volledige_naam(), 'Xerxes')
+#        n.guess_geslachtsnaam()
+#        self.assertEqual(n.get_volledige_naam(), 'Xerxes')
+#        self.assertEqual(n.guess_normal_form(), 'Xerxes')
+#        
+#        n= Name().from_soup(u'Aäron')
+#        self.assertEqual(n.guess_normal_form(), u'Aäron')
+#        n= Name(u'Willem II')
+#        self.assertEqual(n.guess_normal_form(), u'Willem II')
+#        self.assertEqual(type(n.guess_normal_form()), type(u'Willem II'))
         
     def test_from_args(self):
         n = Name().from_args(volledige_naam='Jelle Gerbrandy', geslachtsnaam='Gerbrandy')
@@ -200,7 +200,9 @@ class NameTestCase(unittest.TestCase):
         
         naam = Name('JOHAN (Johann) VII')   
         self.assertEqual(naam.guess_normal_form(), 'Johan VII')
-        self.assertEqual(naam.guess_normal_form2(), 'Johan VII')
+        
+        naam = Name().from_string('<persName><name type="geslachtsnaam">Dirk</name>, VI, Theodericus</persName>')  
+        self.assertEqual(naam.guess_normal_form(), 'Dirk, VI, Theodericus')
         
         naam = Name('Lodewijk XVIII')   
         self.assertEqual(naam.guess_normal_form2(), 'Lodewijk XVIII')
@@ -248,6 +250,7 @@ class NameTestCase(unittest.TestCase):
     def test_fix_capitals(self):
         self.assertEqual(fix_capitals('Jean-Jules'), 'Jean-Jules')
         self.assertEqual(fix_capitals('Johan VIII'), 'Johan VIII')
+        self.assertEqual(fix_capitals('Johan III'), 'Johan III')
         self.assertEqual(fix_capitals('Fabricius/Fabritius'), 'Fabricius/Fabritius')
         
     def test_html2unicode(self): 
@@ -326,6 +329,7 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Name('aearssen,walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Name('XXX').soundex_nl(), ['k'])
+        self.assertEqual(Name('Jhr. Mr. X').soundex_nl(), ['k'])
     
 
     def test_init(self):
