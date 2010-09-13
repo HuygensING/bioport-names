@@ -5,7 +5,7 @@ import difflib
 from difflib import SequenceMatcher
 import Levenshtein
 from names.soundex import soundexes_nl, soundex_nl
-from common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
+from names.common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
 
 def split(s):
     return re.split('[ |\-]*', s)
