@@ -1,5 +1,6 @@
 import re
 from common import *
+from plone.memoize import ram
 
  
  
@@ -141,7 +142,11 @@ def soundexes_nl(s, length=-1, group=2,
     result  = [soundex_nl(s, length=length, group=group, wildcards=wildcards) for s in ls] 
     result = list(set(result)) #remove duplicates
     return result
+
+def _cache_key(funcobj, s, length=4, group=1, wildcards=False):
+    return "%s%i%i%i" % (s.encode('utf8'), length, group, wildcards)
     
+@ram.cache(_cache_key)
 def soundex_nl(s, length=4, group=1, wildcards=False):
     """
     return a string of length representing a phonetical canonical form of s
