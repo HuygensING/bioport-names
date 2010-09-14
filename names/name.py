@@ -41,7 +41,6 @@ class Name(object):
     def x__ne__(self, other):
         return self.to_string() != other.to_string()
     
-    @instance.clearafter
     def from_args(self, **args):
         volledige_naam = args.get('volledige_naam',  '')
         self.sort_name = args.get('sort_name', None)
@@ -131,7 +130,6 @@ class Name(object):
         msg = 'The string "%s" (of type %s) should be a part of the volledige naam %s' % (s, type, candidate_strings)
         raise Exception(msg)
     
-    @instance.clearafter
     def from_string(self, s):
         try:
 	        element =  etree.fromstring(s)
@@ -146,7 +144,6 @@ class Name(object):
         self.from_xml(element)
         return self
     
-    @instance.clearafter
     def from_soup(self, s, hints=()):
         """if the input is really messy, this function should be more forgivable"""
         self.source_string = s
@@ -207,7 +204,6 @@ class Name(object):
     def from_xml(self, element):
         return self.from_element(element)
     
-    @instance.clearafter
     def from_element(self, element):
         """element is een etree.Element instance"""
         self._root = element
@@ -221,7 +217,6 @@ class Name(object):
     def volledige_naam(self):
         return self.get_volledige_naam()
 
-    @instance.memoize
     def sort_key(self):
         """this value should assign the name its proper place in the alfabet
         """
@@ -277,7 +272,6 @@ class Name(object):
         result = ' '.join(result)
         return result
 
-#    @instance.memoize
     def geslachtsnaam(self):
         result = self._root.xpath('./name[@type="geslachtsnaam"]/text()')
         result = u' '.join(result)  
@@ -360,7 +354,6 @@ class Name(object):
      
     
     
-    @instance.memoize
     def guess_geslachtsnaam(self, hints=[], change_xml=True):
         """Try to guess the geslachtsnaam, and return it
         
@@ -395,7 +388,6 @@ class Name(object):
         else: #in case we did not find a last name, and return None
             return None
         
-    @instance.clearafter
     def _guess_geslachtsnaam(self, change_xml,hints):
         """ """
         orig_naam = self._root.text
@@ -437,7 +429,6 @@ class Name(object):
         result = fix_capitals(result)
         return result
     
-    @instance.memoize
     def guess_normal_form(self, change_xml=True, ):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
         
@@ -471,7 +462,6 @@ class Name(object):
         result = fix_capitals(s)
         return result
 
-    @instance.memoize
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
         return u''.join([s[0] for s in re.findall('\w+', s) if s not in STOP_WORDS])
@@ -487,7 +477,6 @@ class Name(object):
         s = s.strip()
         return s
 
-    @instance.memoize
     def soundex_nl(self, s=None, length=4, group=1):
         if s is None:
             s = self.guess_normal_form()
@@ -498,7 +487,6 @@ class Name(object):
         s = self.serialize()
         return re.findall('\S+', s)
     
-    @instance.memoize
     def contains_initials(self):
         """Return True if the name contains initials"""
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS
