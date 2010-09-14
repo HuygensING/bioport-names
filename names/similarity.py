@@ -14,6 +14,7 @@ def average_distance(l1, l2, distance_function=None):
         """the average distance of the words in l1 and l2
         use the distance function to compute distances between words in l1 and l2
         return the average distance of the highest scores for each of the words from both lists
+        with a slight penalty for the difference in length between the lists
        
         @arguments:
             l1 is a list of strings
@@ -63,7 +64,7 @@ def average_distance(l1, l2, distance_function=None):
                 
         #if there is a difference in length, we penalize for each item 
         for i in range(len(l2) - len(l1)):
-            counter += .9
+            counter += .8
             numerator += 1
         try:
             return counter/numerator                
@@ -97,15 +98,16 @@ class Similarity(object):
         
         if optimize is True, skip some parts of the algorithm for speed (and sacrifice precision)"""
         weight_normal_form =  5.0 #distance between soundexes of normal form
-        weight_normal_form_if_one_name_is_in_initials = weight_normal_form / 4 #distance between soundexes of normal form
-        weight_normal_form_soundex =  9.0 #average distance between soundexes of normal form
-        weight_normal_form_soundex_if_one_name_is_in_initials =weight_normal_form_soundex /4 #distance between soundexes of normal form
-        weight_geslachtsnaam1 = 7.0 #distance between soundexes of geslachtsnamen
-        weight_geslachtsnaam2 = 7.0 #distance between geslachtsnaam
+        weight_normal_form_if_one_name_is_in_initials = weight_normal_form / 3 #distance between soundexes of normal form
+        weight_normal_form_soundex =  8.0 #average distance between soundexes of normal form
+        weight_normal_form_soundex_if_one_name_is_in_initials =weight_normal_form_soundex /1.0 #distance between soundexes of normal form
+        weight_geslachtsnaam1 = 10.0 #distance between soundexes of geslachtsnamen
+        weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
         weight_initials =  2 #distance between initials
-        weight_initials_if_one_name_is_in_initials =  weight_initials * 2 #distance between initials if one of the names is in intials
+        weight_initials_if_one_name_is_in_initials =  weight_initials * 3.0 #
             #(for example, "A.B Classen")
-        
+            #(we weigh initials more in this case because we expect the other distances to be smaller
+        weight_initials_if_one_name_consists_of_one_word_only = 1
         
         #normal form of the name 
         nf1 = n1.guess_normal_form()
@@ -139,6 +141,7 @@ class Similarity(object):
         else:
             ratio_geslachtsnaam1 = 1 
             weight_geslachtsnaam1 = 0
+            
         #n de afstand van de woorden in de achtenraam zelf
         ratio_geslachtsnaam2 = self.average_distance(
              re.split('[ \.\,\-]', g1.lower()),
@@ -149,8 +152,9 @@ class Similarity(object):
         #(or perhaps make this: if we know the first name)
         if len(n1.initials()) == 1 or len(n2.initials()) == 1:
             #initials count much less if there is only one
-            weight_initials = 0
-            ratio_initials = .5
+            weight_initials = weight_initials_if_one_name_consists_of_one_word_only
+#            ratio_initials = .5
+            ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())
         elif n1.contains_initials() or n2.contains_initials():
             try:
                 ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())

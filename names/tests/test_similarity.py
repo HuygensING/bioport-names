@@ -1,5 +1,6 @@
 #! /usr/bin/python    
 #encoding=utf-8
+import unittest
 from unittest import TestCase, TestSuite, main, makeSuite
 from names.name import Name
 from names.similarity import Similarity
@@ -124,17 +125,17 @@ class NaamSimilarityTestCase(TestCase):
         #oldenbarnevelt lijkt (ongeveer) evenveel op het ena als op de andere
         self.assert_similarity_order([
            Name('oldenbarnevelt'),
-           Name('Oldenbarnevelt, dr. Johan van'),                           
            Name('Oldenbarnevelt, Willem van '),
+           Name('Oldenbarnevelt, dr. Johan van'),                           
            ])
        
        
         self.assert_similarity_order([
-          Name(voornaam='Hendrik IV'),
-          Name(voornaam='Hendrick IV'),
-          Name(voornaam='Hendrik V'),
-          Name(geslachtsnaam='Hendrik'),
-          Name(voornaam='Filips IV'),
+          Name('Hendrik IV'),
+          Name('Hendrik'),
+          Name('Hendrick IV'),
+          Name('Hendrik V'),
+          Name('Filips IV'),
                                       
           ])
         self.assert_similarity_order([
@@ -151,7 +152,20 @@ class NaamSimilarityTestCase(TestCase):
             Name('St. Luc, Jacques de'),
         ])
         
-        
+    
+        self.assert_similarity_order([
+            Name('Constant Rebecque De Villars, Jules Thierry Nicolas baron de'),
+            Name('Constant Rebecque, J.V. baron de'),
+            Name('Rebecque, J.F. de Constant'),
+            Name('Constant Rebecque, Mr. Charles Theodore Jean baron de'),
+            Name('Constantijn'),
+            
+        ])    
+        self.assert_similarity_order([
+            Name('Willem III'), 
+            Name('koning Willem III'), 
+            Name('Willem'),
+        ])                               
         #deze heeft een larger score dan heel veel and
         benchmark =  (Name('Craen, Anna'), Name('Craen, Andrea'))
         benchmark_top =  (Name('Jacob Dirks'), Name('Dirks, Mr. Jacob'))
@@ -186,10 +200,10 @@ class NaamSimilarityTestCase(TestCase):
             (Name('Johanness Henricus Scholten'), Name('Scholten, J.')),
             benchmark
           ])    
-        self.assert_more_similar([
-            (Name(' Margaretha van Godewijcs'), Name('Godewijk, Margaretha')),
-            benchmark
-          ])            
+#        self.assert_more_similar([
+#            (Name(' Margaretha van Godewijcs'), Name('Godewijk, Margaretha')),
+#            benchmark
+#          ])            
         
         self.assert_more_similar([
             (Name('Johannes Steenmeijer'), Name('Steenmeyer, Johannes')),
@@ -215,6 +229,10 @@ class NaamSimilarityTestCase(TestCase):
  
         self.assert_more_similar([
            (Name('oldenbarnevelt'),  Name('Oldenbarnevelt, Willem van ')),
+           benchmark,
+           ])
+        self.assert_more_similar([
+           (Name('Prof. Dr. Ing. Jhr. Johan Brootjens'),  Name('Johan Brootjens')),
            benchmark,
            ])
         self.assert_more_similar([
@@ -255,6 +273,12 @@ class NaamSimilarityTestCase(TestCase):
         self.assertEqual(Similarity().ratio(Name('XXX'), Name('XXX')), 1.0, Similarity().ratio(Name('XXX'), Name('XXX'), explain=1))
 
 
+ 
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(NaamSimilarityTestCase),
+        ))
 
 if __name__=='__main__':
-    main() 
+    unittest.main()
+    

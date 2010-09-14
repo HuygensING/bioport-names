@@ -236,6 +236,7 @@ PREFIXES =  [
 POSTFIXES = [
    r'cz.',
    r'Cz.',
+   r'jr.',
 ]
 
 VOORVOEGSELS = [
@@ -299,6 +300,8 @@ ROMANS = [
 ]
 
 TERRITORIALE_TITELS = [
+    r'baron',
+    r'count',
     r'graaf',
     r'gravin',
     r'grootvorstin',
@@ -310,8 +313,6 @@ TERRITORIALE_TITELS = [
     r'keizerin',
     r'koning',
     r'koningin',
-    r'mr',
-    r'mr.',
     r'prince',
     r'princess',
     r'prins', 
@@ -323,6 +324,7 @@ STOP_WORDS = [] + PREFIXES + VOORVOEGSELS + TUSSENVOEGSELS + POSTFIXES + ROMANS 
     TERRITORIALE_TITELS
 
 R_STOPWORDS = re.compile('|'.join([r'\b%s\b' % w for w in STOP_WORDS]), re.UNICODE | re.IGNORECASE)
+R_ROMANS = re.compile('|'.join(ROMANS))
 
 def remove_stopwords(s):
     return R_STOPWORDS.sub('', s).strip()

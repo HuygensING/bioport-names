@@ -34,6 +34,7 @@ GROUPS2 = (
             ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
             ('na', ['naar$',]),
             ('', ('(?<=der)s$',)),
+            ('ek', ('ecque$',)),
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
             ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant

@@ -629,3 +629,13 @@ Williamsohn
 Villiamson 
 Wilhelmson
 """
+ 
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(SoundexNLTestCase),
+        unittest.makeSuite(Ideal),
+        ))
+
+if __name__=='__main__':
+    unittest.main()
+    

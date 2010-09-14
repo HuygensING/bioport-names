@@ -5,6 +5,7 @@ from common import *
 #from similarity import  soundexes_nl
 from plone.memoize import instance
 from names.soundex import soundexes_nl
+from names.common import R_ROMANS
 import re
 
 class Name(object):
@@ -135,7 +136,6 @@ class Name(object):
         try:
 	        element =  etree.fromstring(s)
         except etree.XMLSyntaxError, err:
-#            import pdb;pdb.set_trace()
             if 'Entity' in err.message:
 	            #the string contains HTML Entities (probably)
 	            #and we provide some robustness by converting it to unicode
@@ -304,49 +304,49 @@ class Name(object):
         returns: 
             a substring of s
         """
-        #XXX  this is very primitive
-        naam = s
+        name = s
             
         #anything between brackets is NOT a last name
-        #(but we leave the brackets in "Ha(c)ks" blijven staan)
-        naam = re.sub(r'(?<!\w)\(.*?\)', '', naam)
-        naam = naam.strip()
-               
-        if ', ' in naam: #als er een komma in de naam staat, dan is dat wat voor de komma staat de achternaam
-            guessed_naam = naam.split(', ')[0] 
-        elif ' - ' in naam: #a real use case: "Hees - B.P. van"
-            guessed_naam = naam.split(' - ')[0] 
+        #(but we leave the brackets in "Ha(c)ks")
+        name = re.sub(r'(?<!\w)\(.*?\)', '', name)
+        name = name.strip()
+        
+        
+        if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
+            guessed_name = name.split(', ')[0] 
+        elif ' - ' in name: #a real use case: "Hees - B.P. van"
+            guessed_name = name.split(' - ')[0] 
         elif 'startswithgeslachtsnaam' in hints: #er staat geen komma (ofzo) in, maar we weten wel dat de naam
             #met een achternaam begint: dan moet het wel de hele string zijn
-            guessed_naam = naam 
-        elif re.match('[A-Z]\.', naam):
+            guessed_name = name 
+        elif re.match('[A-Z]\.', name):
             #als de naam met een initiaal begint, fitleren we alle intiitale er uit, en is de rest de achternaam
-            guessed_naam = naam[re.match('([A-Z]\.)+',naam).end():] 
-        elif ' ' in naam:
-            #als er een spatie
-            candidates = naam.split(' ')
+            guessed_name = name[re.match('([A-Z]\.)+',name).end():] 
+        elif ' ' in name:
+            candidates = re.split('\s+', name)
             if candidates[-1] in ROMANS:
-                #als de naam op ene ORMAN numeral eindigt, dan gaan we er van uit dat er geen achternaam is
-                #(merk op dat dit mis gaat bij amerikaanse namen als "John Styuivesandt III"
-                guessed_naam = ''
+                #if the name ends with a roman numeral, (as in "Karel II") this is often not a geslachtsnaam
+                #but we treat is like to anyway, because it is useful for sotring etc (XXX not sure if this is a good idea)
+                #(note American names as well, such as "John Styuivesandt III"
+#                guessed_name = ''
+                guessed_name = candidates[-2]
             elif candidates[-1] in POSTFIXES:
-                guessed_naam = ' '.join(candidates[-2:])
+                guessed_name = ' '.join(candidates[-2:])
             else:
-                guessed_naam = candidates[-1]  
+                guessed_name = candidates[-1]  
         else:
-            guessed_naam = naam 
-            
+            guessed_name = name 
             
         #een speciaal geval zijn namen van getrouwde dames, zoals 'Angela Boter-de Groot' 
-        if '-' in naam:
+        if '-' in name:
             for tussenvoegsel in TUSSENVOEGSELS:
-                if '-%s' % tussenvoegsel in naam:
-                    i = naam.find('-%s' % tussenvoegsel)
+                if '-%s' % tussenvoegsel in name:
+                    i = name.find('-%s' % tussenvoegsel)
                     if i > -1:
-                        guessed_naam = self._guess_geslachtsnaam_in_string(naam[:i], hints) 
-                        guessed_naam = guessed_naam + naam[i:] 
-        guessed_naam = self._strip_tussenvoegels(guessed_naam)
-        return guessed_naam
+                        guessed_name = self._guess_geslachtsnaam_in_string(name[:i], hints) 
+                        guessed_name = guessed_name + name[i:] 
+        guessed_name = self._strip_tussenvoegels(guessed_name)
+        return guessed_name
         
     def _strip_tussenvoegels(self,s):
         s = s.strip()
@@ -416,12 +416,10 @@ class Name(object):
         NB: we rather simply serialize 'as is' then make a mistake, so we only change the order of the name if we are pretty sure
          
         """
-#        self.guess_normal_form(change_xml=change_xml)
         n = self._root
         last_name = self.guess_geslachtsnaam()
         result = self.serialize()
-#        print 'serialized', result
-        if (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text and not (n.text and n.text.strip())):
+        if (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text and not (n.text and n.text.strip()))  and not R_ROMANS.search(result):
             #if the normal form thing immediate starts with the geslachtsnaam
             #serialize everything except the geslachtsnaam
             #and add the geslachtsnaam at the end
@@ -445,6 +443,8 @@ class Name(object):
         
         returns:
             a string
+        
+        cf. also "guess_normal_form2"
         """
         try:
             self._root
@@ -473,8 +473,8 @@ class Name(object):
 
     @instance.memoize
     def initials(self):
-        s = self.guess_normal_form()
-        return u' '.join([s[0] for s in re.findall('\w+', s) if s not in STOP_WORDS])
+        s = self.guess_normal_form2() #take ther string with first_name, last_name etc
+        return u''.join([s[0] for s in re.findall('\w+', s) if s not in STOP_WORDS])
 
     def to_xml(self):
         if not hasattr(self,'_root') and hasattr(self, 'xml'):

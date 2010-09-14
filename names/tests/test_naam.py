@@ -7,17 +7,11 @@ from names.name import Name
 from lxml import etree
 from names.common import *
 
-
-Name = Name
-
 class NameTestCase(unittest.TestCase):
 
     def tearDown(self):
         pass
  
-    def test_sanity(self):
-        return
-
     def test_guess_geslachtsnaam(self):
 #        assert 0, Name()._guess_geslachtsnaam_in_string('Bec(q)-Crespin, Josina du')
         for n, wanted_result in [
@@ -29,15 +23,18 @@ class NameTestCase(unittest.TestCase):
 			('Yvette Marcus-de Groot', 'Marcus-de Groot'),
 			('S. de Groot', 'Groot'),
             ('Willy Smit-Buit' , 'Smit-Buit' ), 
-            ('Johann VII' , '' ), 
-            ('Johann (Johan) VII' , '' ), 
+            ('Hendrik', 'Hendrik'),
             ('Bec(q)-Crespin, Josina du', 'Bec(q)-Crespin'), 
             ('Abraham de Heusch of Heus', 'Heus'),
             ('David Heilbron Cz.', 'Heilbron Cz.'),
             ('Arien A', 'A'),
-            ('Johannes de Heer', 'Heer')
+            ('Johannes de Heer', 'Heer'),
+            ('Johann VII' , 'Johann' ), 
+            ('Johann (Johan) VII' , 'Johann' ), 
+            ('koning Willem III' , 'Willem' ), 
             ]:
             guessed = Name(n).guess_geslachtsnaam()
+#            import pdb;pdb.set_trace()
             self.assertEqual(guessed, wanted_result, '%s "%s"-"%s"' % (n, guessed, wanted_result))
 
     def test_guess_normal_form(self):
@@ -121,7 +118,7 @@ class NameTestCase(unittest.TestCase):
         
         el = etree.Element('test')
         el.text = u'Wét'
-        s = '<persName>Wét</persName>'
+        s = u'<persName>Wét</persName>'
         self.assertEqual(n.to_string(), s)
         
     def test_serialize(self):
@@ -206,7 +203,6 @@ class NameTestCase(unittest.TestCase):
         
         naam = Name('Lodewijk XVIII')   
         self.assertEqual(naam.guess_normal_form2(), 'Lodewijk XVIII')
-        
         
         s = """<persName> <name type="voornaam">Trijn</name> <name type="intrapositie">van</name> <name type="geslachtsnaam">Leemput</name></persName>"""
         naam = Name().from_string(s)
@@ -307,9 +303,9 @@ class NameTestCase(unittest.TestCase):
 
 #      
     def test_initials(self):
-        self.assertEqual(Name('P. Gerbrandy').initials(), 'G P')
-        self.assertEqual(Name('Engelmann, Th.W.').initials(), 'E T W')
-        self.assertEqual(Name('Borret, Prof. Dr. Theodoor Joseph Hubert').initials(), 'B T J H')
+        self.assertEqual(Name('P. Gerbrandy').initials(), 'PG')
+        self.assertEqual(Name('Engelmann, Th.W.').initials(), 'TWE')
+        self.assertEqual(Name('Borret, Prof. Dr. Theodoor Joseph Hubert').initials(), 'TJHB')
 
     def test_soundex_nl(self):
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
@@ -377,18 +373,13 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(Name('Th.D. de Rowling').contains_initials(), True)
         self.assertEqual(Name('Rowling, Jan').contains_initials(), False)
         self.assertEqual(Name('Rowling, J.').contains_initials(), True)
+        
 def test_suite():
-    
-    return TestSuite((
-        makeSuite(NameTestCase),
+    return unittest.TestSuite((
+        unittest.makeSuite(NameTestCase),
         ))
 
-
 if __name__=='__main__':
-    test_suite = unittest.TestSuite()
-    tests = [NameTestCase]
-    for test in tests:
-        test_suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(test_suite)
+    unittest.main()
 
 
