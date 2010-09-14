@@ -73,13 +73,11 @@ def average_distance(l1, l2, distance_function=None):
 def levenshtein_ratio(a,b):
     "Calculates the Levenshtein distance between a and b."
     return Levenshtein.ratio(a,b)
+
+
 class Similarity(object):
-    def __init__(self):
-        pass
-
-
-
-    def levenshtein_ratio2(self, a, b):
+    @staticmethod
+    def levenshtein_ratio2(a, b):
         d = Levenshtein.distance(a, b)
         return 1.0 - (float(d)/10.0)
 #    def to_ascii(self, s):
@@ -89,11 +87,12 @@ class Similarity(object):
 #            s = s.replace(k, d[k])
 #        return s
 
-    def average_distance(self, l1, l2, distance_function=None): 
-        
+    @staticmethod
+    def average_distance(l1, l2, distance_function=None): 
         return average_distance(l1, l2, distance_function)
 
-    def ratio(self,n1,n2, explain=0, optimize=False):
+    @staticmethod
+    def ratio(n1,n2, explain=0, optimize=False):
         """Combine several parameters do find a similarity ratio
         
         if optimize is True, skip some parts of the algorithm for speed (and sacrifice precision)"""
@@ -116,8 +115,8 @@ class Similarity(object):
         nf1 = to_ascii(nf1)
         nf2 = to_ascii(nf2)
         
-#        ratio_normal_form = self.levenshtein_ratio(nf1, nf2)
-        ratio_normal_form = self.average_distance(split(nf1), split(nf2))        
+#        ratio_normal_form = Similarity.levenshtein_ratio(nf1, nf2)
+        ratio_normal_form = Similarity.average_distance(split(nf1), split(nf2))        
         #create a simkplified soundex set for this name
         #remove stopwords
         nf1 = remove_stopwords( nf1)
@@ -126,7 +125,7 @@ class Similarity(object):
         #we use the soundex_nl property of the name, so the property gets cached
         se1 = n1.soundex_nl(nf1, group=2, length=-1)
         se2 = n2.soundex_nl(nf2, group=2, length=-1)
-        ratio_normal_form_soundex = self.average_distance( se1, se2)
+        ratio_normal_form_soundex = Similarity.average_distance( se1, se2)
         
         #gelachtsnaam wordt op twee manieren met elkaar vergeleken
         g1 = n1.geslachtsnaam() #or n1.get_volledige_naam()
@@ -137,13 +136,13 @@ class Similarity(object):
             #de soundexes van de achternaam worden meegewoen
             g1_soundex = n1.soundex_nl(g1, group=2, length=-1)
             g2_soundex = n2.soundex_nl(g2, group=2, length=-1)
-            ratio_geslachtsnaam1 = self.average_distance(g1_soundex, g2_soundex)
+            ratio_geslachtsnaam1 = Similarity.average_distance(g1_soundex, g2_soundex)
         else:
             ratio_geslachtsnaam1 = 1 
             weight_geslachtsnaam1 = 0
             
         #n de afstand van de woorden in de achtenraam zelf
-        ratio_geslachtsnaam2 = self.average_distance(
+        ratio_geslachtsnaam2 = Similarity.average_distance(
              re.split('[ \.\,\-]', g1.lower()),
              re.split('[ \.\,\-]', g2.lower()),
              levenshtein_ratio)
@@ -212,6 +211,6 @@ class Similarity(object):
         return final_ratio
 
     def explain_ratio(self, n1, n2):
-        return self.ratio(n1, n1, explain=1) 
+        return Similarity.ratio(n1, n1, explain=1) 
     
 

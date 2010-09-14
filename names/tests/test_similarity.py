@@ -8,7 +8,7 @@ from names.similarity import Similarity
 class NaamSimilarityTestCase(TestCase):
     def ratio(self, x,y, explain=0):
             #ratio takes two Name instances anc compares them
-            return Similarity().ratio(x,y, explain)
+            return Similarity.ratio(x,y, explain)
     def print_ratio_debug(self, n1, n2):
         s = '\n%s: %s <-> %s\n%s\n' % ( self.ratio(n1,n2), n1.get_volledige_naam(), n2.get_volledige_naam(), self.ratio(n1, n2, 1)) 
         return s
@@ -16,7 +16,7 @@ class NaamSimilarityTestCase(TestCase):
         """assert that the names in de list are similar in the order given to the first name in the list"""
         def ratio(x,y, explain=0):
             #ratio takes two Name instances anc compares them
-            return Similarity().ratio(x,y, explain)
+            return Similarity.ratio(x,y, explain)
         n0 = ls[0]
         last_name = ls[1]
 
@@ -257,7 +257,7 @@ class NaamSimilarityTestCase(TestCase):
         #"prince of wales"
         #
     def test_average_distance(self):
-        d = Similarity().average_distance
+        d = Similarity.average_distance
         self.assertEqual(d(['x'], ['x']), 1.0)
         self.assertEqual(d(['Xxx'], ['Xxx']), 1.0)
         self.assertEqual(d(['Xxx', 'y'], ['Xxx','y']), 1.0)
@@ -270,7 +270,7 @@ class NaamSimilarityTestCase(TestCase):
 #        self.assertEqual(d(['Xxx',], ['Xxx','y']), 1.0)
 
     def test_extremes(self):
-        self.assertEqual(Similarity().ratio(Name('XXX'), Name('XXX')), 1.0, Similarity().ratio(Name('XXX'), Name('XXX'), explain=1))
+        self.assertEqual(Similarity.ratio(Name('XXX'), Name('XXX')), 1.0, Similarity.ratio(Name('XXX'), Name('XXX'), explain=1))
 
 
  
