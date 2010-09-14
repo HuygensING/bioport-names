@@ -633,7 +633,7 @@ Wilhelmson
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(SoundexNLTestCase),
-        unittest.makeSuite(Ideal),
+        unittest.makeSuite(IdealWorldNLTestCase),
         ))
 
 if __name__=='__main__':
