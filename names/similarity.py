@@ -6,6 +6,7 @@ from difflib import SequenceMatcher
 import Levenshtein
 from names.soundex import soundexes_nl, soundex_nl
 from names.common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
+from plone.memoize.volatile import cache
 
 def split(s):
     return re.split('[ |\-]*', s)
@@ -91,7 +92,11 @@ class Similarity(object):
     def average_distance(l1, l2, distance_function=None): 
         return average_distance(l1, l2, distance_function)
 
+    def _ratio_cache_key(func, n1, n2, explain=0, optimize=False):
+        return '%s:%s:%s:%i' % (n1.to_string(), n2.to_string(), explain, optimize)
+
     @staticmethod
+    @cache(_ratio_cache_key)
     def ratio(n1,n2, explain=0, optimize=False):
         """Combine several parameters do find a similarity ratio
         

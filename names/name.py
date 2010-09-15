@@ -30,10 +30,13 @@ class Name(object):
             self.from_args(**args)
    
     def __str__(self):
-        return self.volledige_naam()
+        val = self.volledige_naam()
+        if isinstance(val, unicode):
+            return val.encode('ascii', 'replace')
+        return val
     
     def __repr__(self):
-        return self.__str__()
+        return '<Name %s>' % self.__str__()
     
     def __eq__(self, other):
         return self.to_string() == other.to_string()
@@ -211,7 +214,11 @@ class Name(object):
 
     def get_volledige_naam(self):
         """return a string without (XML) markup in the original order""" 
-        s = self.serialize(self._root).strip()
+        try:
+            s = self.serialize(self._root).strip()
+        except:
+            from pdb import set_trace;set_trace() ############################## Breakpoint ##############################
+            s = self.serialize(self._root).strip()
         return s
 
     def volledige_naam(self):
