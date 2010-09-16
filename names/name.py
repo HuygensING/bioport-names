@@ -1,12 +1,16 @@
 # coding=utf-8
 from lxml import etree 
 from lxml.etree import Element, SubElement
-from common import * 
+from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
+                    serialize, remove_parenthesized, html2unicode, to_ascii,
+                    POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS)
 #from similarity import  soundexes_nl
 from plone.memoize import instance
 from names.soundex import soundexes_nl
 from names.common import R_ROMANS
 import re
+
+wordsplit_re = re.compile('\w+')
 
 class Name(object):
     """The name of a person
@@ -214,11 +218,7 @@ class Name(object):
 
     def get_volledige_naam(self):
         """return a string without (XML) markup in the original order""" 
-        try:
-            s = self.serialize(self._root).strip()
-        except:
-            from pdb import set_trace;set_trace() ############################## Breakpoint ##############################
-            s = self.serialize(self._root).strip()
+        s = self.serialize(self._root).strip()
         return s
 
     def volledige_naam(self):
@@ -360,7 +360,7 @@ class Name(object):
     
      
     
-    
+    @instance.memoize
     def guess_geslachtsnaam(self, hints=[], change_xml=True):
         """Try to guess the geslachtsnaam, and return it
         
@@ -435,7 +435,7 @@ class Name(object):
         result = remove_parenthesized(result)
         result = fix_capitals(result)
         return result
-    
+    @instance.memoize
     def guess_normal_form(self, change_xml=True, ):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
         
@@ -461,7 +461,7 @@ class Name(object):
         else:
             rest = self.serialize(exclude=['geslachtsnaam']).strip()
             if rest:
-		        s = '%s, %s' % (last_name, rest)
+                s = '%s, %s' % (last_name, rest)
             else:
                 s = last_name
                 
@@ -469,9 +469,11 @@ class Name(object):
         result = fix_capitals(s)
         return result
 
+    @instance.memoize
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
-        return u''.join([s[0] for s in re.findall('\w+', s) if s not in STOP_WORDS])
+        return u''.join(s[0] for s in wordsplit_re.findall(s)
+                            if s not in STOP_WORDS)
 
     def to_xml(self):
         if not hasattr(self,'_root') and hasattr(self, 'xml'):
@@ -483,7 +485,7 @@ class Name(object):
         s = unicode(s)
         s = s.strip()
         return s
-
+    @instance.memoize
     def soundex_nl(self, s=None, length=4, group=1):
         if s is None:
             s = self.guess_normal_form()
@@ -493,7 +495,7 @@ class Name(object):
     def _name_parts(self):
         s = self.serialize()
         return re.findall('\S+', s)
-    
+    @instance.memoize
     def contains_initials(self):
         """Return True if the name contains initials"""
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS

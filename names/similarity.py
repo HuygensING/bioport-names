@@ -96,7 +96,7 @@ class Similarity(object):
         return '%s:%s:%s:%i' % (n1.to_string(), n2.to_string(), explain, optimize)
 
     @staticmethod
-    @cache(_ratio_cache_key)
+    #@cache(_ratio_cache_key)
     def ratio(n1,n2, explain=0, optimize=False):
         """Combine several parameters do find a similarity ratio
         
