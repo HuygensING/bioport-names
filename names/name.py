@@ -249,7 +249,7 @@ class Name(object):
 
         ls = base.split()
         for s in TUSSENVOEGSELS:
-            if ls[0] == s:
+            if ls and ls[0] == s:
                 base = ' '.join(ls[1:])
                 
         for s in '?.-': #if the name starts with any of these characters, it comes last (not first)
