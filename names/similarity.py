@@ -6,11 +6,20 @@ from difflib import SequenceMatcher
 import Levenshtein
 from names.soundex import soundexes_nl, soundex_nl
 from names.common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
-from plone.memoize.volatile import cache
+from plone.memoize.ram import cache
 
 def split(s):
     return re.split('[ |\-]*', s)
 
+
+def _average_distance_key(funcobj, l1, l2, dfunc):
+    if dfunc:
+        fname = 'levenshtein'
+    else:
+        fname = "%s.%s" % (funcobj.__module__, funcobj.__name__)
+    return "%s:%s:%s" % (fname, l1, l2)
+
+@cache(_average_distance_key)
 def average_distance(l1, l2, distance_function=None):
         """the average distance of the words in l1 and l2
         use the distance function to compute distances between words in l1 and l2
@@ -35,7 +44,8 @@ def average_distance(l1, l2, distance_function=None):
             max(d(n1a, n2a), d(n1b, n2a))
             max(d(n1a, n2b), d(n1b, n2a))
         
-        """ 
+        """
+
         if not distance_function:
             distance_function = levenshtein_ratio
         counter = 0.0
@@ -93,10 +103,11 @@ class Similarity(object):
         return average_distance(l1, l2, distance_function)
 
     def _ratio_cache_key(func, n1, n2, explain=0, optimize=False):
-        return '%s:%s:%s:%i' % (n1.to_string(), n2.to_string(), explain, optimize)
+        keyargs = (n1.to_string(), n2.to_string(), explain, optimize)
+        return ('%s:%s:%s:%i' % keyargs).encode('utf8')
 
     @staticmethod
-    #@cache(_ratio_cache_key)
+    @cache(_ratio_cache_key)
     def ratio(n1,n2, explain=0, optimize=False):
         """Combine several parameters do find a similarity ratio
         
