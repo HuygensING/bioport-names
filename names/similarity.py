@@ -85,6 +85,20 @@ def levenshtein_ratio(a,b):
     "Calculates the Levenshtein distance between a and b."
     return Levenshtein.ratio(a,b)
 
+# weight_normal_form = 5
+# distance between soundexes of normal form (weight_normal_form / 3)
+weight_normal_form_if_one_name_is_in_initials = 5 / 3
+# distance between soundexes of normal form
+# (weight_normal_form_soundex /1.0)
+weight_normal_form_soundex_if_one_name_is_in_initials = 8 /1.0
+# weight_initials * 3.0
+weight_initials_if_one_name_is_in_initials = 2 * 3.0
+# (for example, "A.B Classen")
+# (we weigh initials more in this case because we expect
+# the other distances to be smaller
+weight_initials_if_one_name_consists_of_one_word_only = 1
+
+
 
 class Similarity(object):
     @staticmethod
@@ -112,18 +126,11 @@ class Similarity(object):
         """Combine several parameters do find a similarity ratio
         
         if optimize is True, skip some parts of the algorithm for speed (and sacrifice precision)"""
-        weight_normal_form =  5.0 #distance between soundexes of normal form
-        weight_normal_form_if_one_name_is_in_initials = weight_normal_form / 3 #distance between soundexes of normal form
-        weight_normal_form_soundex =  8.0 #average distance between soundexes of normal form
-        weight_normal_form_soundex_if_one_name_is_in_initials =weight_normal_form_soundex /1.0 #distance between soundexes of normal form
+        weight_normal_form = 5.0 #distance between soundexes of normal form
+        weight_normal_form_soundex = 8.0 #average distance between soundexes of normal form
         weight_geslachtsnaam1 = 10.0 #distance between soundexes of geslachtsnamen
         weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
-        weight_initials =  2 #distance between initials
-        weight_initials_if_one_name_is_in_initials =  weight_initials * 3.0 #
-            #(for example, "A.B Classen")
-            #(we weigh initials more in this case because we expect the other distances to be smaller
-        weight_initials_if_one_name_consists_of_one_word_only = 1
-        
+        weight_initials = 2 #distance between initials
         #normal form of the name 
         nf1 = n1.guess_normal_form()
         nf2 = n2.guess_normal_form()
@@ -132,7 +139,7 @@ class Similarity(object):
         nf2 = to_ascii(nf2)
         
 #        ratio_normal_form = Similarity.levenshtein_ratio(nf1, nf2)
-        ratio_normal_form = Similarity.average_distance(split(nf1), split(nf2))        
+        ratio_normal_form = Similarity.average_distance(split(nf1), split(nf2))
         #create a simkplified soundex set for this name
         #remove stopwords
         nf1 = remove_stopwords( nf1)
@@ -184,15 +191,18 @@ class Similarity(object):
         if n1.contains_initials() or n2.contains_initials():
             weight_normal_form = weight_normal_form_if_one_name_is_in_initials 
             weight_normal_form_soundex = weight_normal_form_soundex_if_one_name_is_in_initials
-            
-        try:
-            counter = ratio_normal_form * weight_normal_form +  ratio_normal_form_soundex * weight_normal_form_soundex+ ratio_geslachtsnaam1*weight_geslachtsnaam1 + ratio_geslachtsnaam2*weight_geslachtsnaam2 +  ratio_initials*weight_initials
-            numerator =  weight_normal_form  +  weight_normal_form_soundex + weight_initials + weight_geslachtsnaam1 + weight_geslachtsnaam2
-            final_ratio = counter/numerator
 
-        except ZeroDivisionError:
+        counter = (ratio_normal_form * weight_normal_form +
+                   ratio_normal_form_soundex * weight_normal_form_soundex +
+                   ratio_geslachtsnaam1 * weight_geslachtsnaam1 +
+                   ratio_geslachtsnaam2 * weight_geslachtsnaam2 +
+                   ratio_initials * weight_initials)
+        numerator = (weight_normal_form  +  weight_normal_form_soundex +
+                     weight_initials + weight_geslachtsnaam1 + weight_geslachtsnaam2)
+        if numerator == 0:
             return 0.0
-        
+        final_ratio = counter/numerator
+
         if explain:
 #            d = [
 #                ('ratio_normal_form',ratio_normal_form,),
