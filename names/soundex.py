@@ -1,9 +1,9 @@
 import re
 from common import *
 from plone.memoize import ram
+STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 
- 
- 
+
 #GROUPS1 defines the 'loose' soundex expression - many words have the same expression
 GROUPS1 = (
             ('' ,['[^a-z]', 'en$', '^h']), #alleen alfabetische characters, strip h at start 
@@ -132,7 +132,7 @@ def soundexes_nl(s, length=-1, group=2,
     
     #filter een aantal stopwoorden
     if filter_stop_words:
-        ls = [s for s in ls if s not in STOP_WORDS]
+        ls = [s for s in ls if s not in STOP_WORDS_frozenset]
     if filter_custom:
         ls = [s for s in ls if s not in filter_custom]
     #filter initialen er uit, behalve eerste en laate, want die kunnen nog wel de achternaam zijn

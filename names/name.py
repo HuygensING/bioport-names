@@ -12,7 +12,7 @@ import re
 
 wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
-
+VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITELS)
 class Name(object):
     """The name of a person
     
@@ -131,11 +131,11 @@ class Name(object):
     
     def from_string(self, s):
         try:
-	        element =  etree.fromstring(s)
+            element =  etree.fromstring(s)
         except etree.XMLSyntaxError, err:
             if 'Entity' in err.message:
-	            #the string contains HTML Entities (probably)
-	            #and we provide some robustness by converting it to unicode
+                #the string contains HTML Entities (probably)
+                #and we provide some robustness by converting it to unicode
                 s = html2unicode(s)
                 element = etree.fromstring(s)
             else:
@@ -492,7 +492,7 @@ class Name(object):
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS
         g = self.guess_geslachtsnaam()
         for p in self._name_parts():
-            if p.endswith('.') and p not in VOORVOEGSELS + TERRITORIALE_TITELS:
+            if p.endswith('.') and p not in VOORVOEGSELS_EN_TERRITORIALE_TITELS:
                 return True
         return False
             
