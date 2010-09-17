@@ -271,6 +271,10 @@ class Name(object):
         result = ' '.join(result)
         return result
 
+    #@instance.memoize # used in similarity.ratio, our most expensive function
+    # unfortunately tests won't pass with this enabled, because
+    # the object changes between subsequent calls to this method,
+    # and memoize gives the stale result
     def geslachtsnaam(self):
         result = self._root.xpath('./name[@type="geslachtsnaam"]/text()')
         result = u' '.join(result)  

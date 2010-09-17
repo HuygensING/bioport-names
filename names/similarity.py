@@ -6,7 +6,7 @@ from difflib import SequenceMatcher
 import Levenshtein
 from names.soundex import soundexes_nl, soundex_nl
 from names.common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
-from plone.memoize.ram import cache
+from names.memoize import cache
 
 def split(s):
     return re.split('[ |\-]*', s)
@@ -73,11 +73,11 @@ def average_distance(l1, l2, distance_function=None):
                 counter += d
                 numerator += 1
         #if there is a difference in length, we penalize for each item 
-        counter += .8 * (len(l2) - len(l1))
-        numerator += (len(l2) - len(l1))
+        difference = len(l2) - len(l1)
+        counter += .8 * difference
+        numerator += difference
         if numerator == 0:
             return 1.0
-
         return counter/numerator
 
 def levenshtein_ratio(a,b):
