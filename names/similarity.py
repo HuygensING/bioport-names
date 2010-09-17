@@ -65,22 +65,20 @@ def average_distance(l1, l2, distance_function=None):
 #            distances.append((ls, s1))
         distances.sort(reverse=True)
         #compute maxima for each colum and each row
-        done = []
+        done = set()
         for d, s1, s2 in distances:
             if s1 not in done and s2 not in done:
-                done.append(s1)
-                done.append(s2) 
+                done.add(s1)
+                done.add(s2) 
                 counter += d
                 numerator += 1
-                
         #if there is a difference in length, we penalize for each item 
-        for i in range(len(l2) - len(l1)):
-            counter += .8
-            numerator += 1
-        try:
-            return counter/numerator                
-        except ZeroDivisionError:
+        counter += .8 * (len(l2) - len(l1))
+        numerator += (len(l2) - len(l1))
+        if numerator == 0:
             return 1.0
+
+        return counter/numerator
 
 def levenshtein_ratio(a,b):
     "Calculates the Levenshtein distance between a and b."
@@ -164,26 +162,28 @@ class Similarity(object):
              re.split('[ \.\,\-]', g1.lower()),
              re.split('[ \.\,\-]', g2.lower()),
              levenshtein_ratio)
-
+        n1_initials = n1.initials()
+        n1_initials_lower = n1_initials.lower()
+        n2_initials = n2.initials()
+        n2_initials_lower = n2_initials.lower()
+        n1_contains_initials = n1.contains_initials()
+        n2_contains_initials = n2.contains_initials()
         #count initials only if we have more than one
         #(or perhaps make this: if we know the first name)
-        if len(n1.initials()) == 1 or len(n2.initials()) == 1:
+        if len(n1_initials) == 1 or len(n2_initials) == 1:
             #initials count much less if there is only one
             weight_initials = weight_initials_if_one_name_consists_of_one_word_only
 #            ratio_initials = .5
-            ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())
-        elif n1.contains_initials() or n2.contains_initials():
-            try:
-                ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())
-            except:
-                raise
+            ratio_initials = levenshtein_ratio(n1_initials_lower, n2_initials_lower)
+        elif n1_contains_initials or n2_contains_initials:
+            ratio_initials = levenshtein_ratio(n1_initials_lower, n2_initials_lower)
             weight_initials = weight_initials_if_one_name_is_in_initials
-        elif len(n1.initials()) > 1 and len(n2.initials()) > 1:
-            ratio_initials = levenshtein_ratio(n1.initials().lower(), n2.initials().lower())
+        elif len(n1_initials) > 1 and len(n2_initials) > 1:
+            ratio_initials = levenshtein_ratio(n1_initials_lower, n2_initials_lower)
         else:
             ratio_initials = 0.7
             
-        if n1.contains_initials() or n2.contains_initials():
+        if n1_contains_initials or n2_contains_initials:
             weight_normal_form = weight_normal_form_if_one_name_is_in_initials 
             weight_normal_form_soundex = weight_normal_form_soundex_if_one_name_is_in_initials
 
@@ -213,8 +213,8 @@ class Similarity(object):
 #                ('numerator', numerator,),
 #            ]
             s = '-' * 100 + '\n'
-            s += 'Naam1: %s [%s] [%s] %s\n' % (n1, n1.initials(), n1.guess_normal_form(), se1)
-            s += 'Naam2: %s [%s] [%s] %s\n' % (n2, n2.initials(), n2.guess_normal_form(), se2)
+            s += 'Naam1: %s [%s] [%s] %s\n' % (n1, n1_initials, n1.guess_normal_form(), se1)
+            s += 'Naam2: %s [%s] [%s] %s\n' % (n2, n2_initials, n2.guess_normal_form(), se2)
             s += 'Similarity ratio: %s\n' % final_ratio
             s += '--- REASONS'  + '-' * 30 + '\n'
             format_s = '%-30s | %-10s | %-10s | %-10s | %-10s | %s-10s\n'
