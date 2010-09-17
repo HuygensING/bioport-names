@@ -11,6 +11,7 @@ from names.common import R_ROMANS
 import re
 
 wordsplit_re = re.compile('\w+')
+STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 
 class Name(object):
     """The name of a person
@@ -473,7 +474,7 @@ class Name(object):
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
         return u''.join(s[0] for s in wordsplit_re.findall(s)
-                            if s not in STOP_WORDS)
+                            if s not in STOP_WORDS_frozenset)
 
     def to_xml(self):
         if not hasattr(self,'_root') and hasattr(self, 'xml'):

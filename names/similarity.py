@@ -13,10 +13,10 @@ def split(s):
 
 
 def _average_distance_key(funcobj, l1, l2, dfunc):
-    if dfunc:
+    if not dfunc:
         fname = 'levenshtein'
     else:
-        fname = "%s.%s" % (funcobj.__module__, funcobj.__name__)
+        fname = "%s.%s" % (dfunc.__module__, dfunc.__name__)
     return "%s:%s:%s" % (fname, l1, l2)
 
 @cache(_average_distance_key)
