@@ -19,11 +19,11 @@ class Name(object):
     this class contains different functions for analyzing and printing the name
     """
     _constituents = [
-        'prepositie',
-        'voornaam',
-        'intrapositie',
-        'geslachtsnaam',
-        'postpositie',
+        'prepositie',   #preposition
+        'voornaam',     #first name
+        'intrapositie', #intraposition
+        'geslachtsnaam',#last name
+        'postpositie',  #postposition
  #       'territoriale_titel',
     ]
    
@@ -116,17 +116,8 @@ class Name(object):
             #find word starting at word boundary (i.e. as alphanumeric, and ending in space of endofline
             m = re.search(r'\b%s(?=\s)|\b%s\Z|\b%s\b' % (s,s,s), text)
             
-#            words = text.split()
             if m:
-#            if s in words:
-#                idx = words.index(s)
-#                before = ' '.join(words[:idx])
-#                if before:
-#                    before += ' '
                 before = text[:m.start()]
-#                after = ' '.join(words[idx + 1:])
-#                if after:
-#                    after = ' ' + after
                 after = text[m.end():]
                 if i == 0:
                     self._root.text = before 
@@ -312,7 +303,6 @@ class Name(object):
         #(but we leave the brackets in "Ha(c)ks")
         name = re.sub(r'(?<!\w)\(.*?\)', '', name)
         name = name.strip()
-        
         
         if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
             guessed_name = name.split(', ')[0] 

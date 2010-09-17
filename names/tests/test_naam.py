@@ -228,8 +228,9 @@ class NameTestCase(unittest.TestCase):
         n = Name('Hees - B.P. van') 
         self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
         
+        n = Name('Hees - B.P. van (1234-1235)') 
+        self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
         
-
     def test_volledige_naam(self):
         n = Name(voornaam='Jelle')
         self.assertEqual(n.get_volledige_naam(),'Jelle')

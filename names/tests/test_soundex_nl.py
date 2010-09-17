@@ -35,6 +35,7 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(soundex_nl1('yyy22'), '.')
         #diacritics?
         self.assertEqual(soundex_nl1(u'wél'), 'f.l') 
+        self.assertEqual(soundex_nl1(u'bosma'), soundex_nl1(u'boschma')) 
 
     def test_soundex_nl2(self):
         def soundex_nl2(s, length=-1):
@@ -129,6 +130,9 @@ class SoundexNLTestCase(TestCase):
 #                'Nuszbaum',
 #                'Nuszbaumer',
             ), 
+            ('bosma',
+             'boschma',
+             ),
             #not even sure what behavior we want here for roman numerals
 #            (u'VI', u'fi'),
             ]:

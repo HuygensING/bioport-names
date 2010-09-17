@@ -81,6 +81,7 @@ def average_distance(l1, l2, distance_function=None):
             return counter/numerator                
         except ZeroDivisionError:
             return 1.0
+
 def levenshtein_ratio(a,b):
     "Calculates the Levenshtein distance between a and b."
     return Levenshtein.ratio(a,b)
@@ -105,12 +106,6 @@ class Similarity(object):
     def levenshtein_ratio2(a, b):
         d = Levenshtein.distance(a, b)
         return 1.0 - (float(d)/10.0)
-#    def to_ascii(self, s):
-#        d = to_ascii
-#        s = unicode(s)
-#        for k in d.keys():
-#            s = s.replace(k, d[k])
-#        return s
 
     @staticmethod
     def average_distance(l1, l2, distance_function=None): 

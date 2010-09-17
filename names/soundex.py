@@ -38,6 +38,7 @@ GROUPS2 = (
             ('ek', ('ecque$',)),
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
+            ('s',['z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
             ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant
             ('', ('(?<=..[bdfgjklmnprstvwzy])e$',)), #e at the aned of a word preceded by a consonant
 #            ('', ('(?<=en)s$',)),
@@ -53,7 +54,6 @@ GROUPS2 = (
             ('3',['eij',  'ey', 'ij', 'ie', 'i',  'y','eei', 'ei', 'ie']), #these become 'i'
             ('2',['ee', 'eh','e', '(?<=.)a$']), #a at the and of a word longer than 1 char) these become 'e'
 #            ('ei', ['eij', 'ey', 'y']), 
-            ('s',['z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
             ('p',['pp']), 
             ('b',['bb']), 
             ('g',['ch', 'gg', 'gh', 'ng']), 
