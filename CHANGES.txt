@@ -1,5 +1,7 @@
-0.2.1 (unreleased)
+0.3.0 (2010-09-17) 
 ------------------
 
-* ...
+* changed soundex algoritem
+* fixed some bugs
+
 
