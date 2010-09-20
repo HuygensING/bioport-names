@@ -5,6 +5,8 @@ setup(name = 'names',
       packages = ['names'],
       install_requires=['python-Levenshtein',
                         'lxml',
+                        'zope.component',
+                        'zope.app.cache'
                        ]
       )
 
