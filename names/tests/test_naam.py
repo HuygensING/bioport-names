@@ -34,7 +34,6 @@ class NameTestCase(unittest.TestCase):
             ('koning Willem III' , 'Willem' ), 
             ]:
             guessed = Name(n).guess_geslachtsnaam()
-#            import pdb;pdb.set_trace()
             self.assertEqual(guessed, wanted_result, '%s "%s"-"%s"' % (n, guessed, wanted_result))
 
     def test_guess_normal_form(self):
