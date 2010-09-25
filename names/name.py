@@ -9,10 +9,23 @@ from plone.memoize import instance
 from names.soundex import soundexes_nl
 from names.common import R_ROMANS
 import re
+import cPickle
 
 wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITELS)
+
+def cached(method):
+    def wrapper(*args, **kwargs):
+        # only cache default calls
+        if hasattr(args[0], '_cache') and len(args) == 1 and len(kwargs) == 0:
+            return args[0]._cache[method.__name__]
+        else:
+            return method(*args, **kwargs)
+    wrapper._cache_decorated_method = True
+    wrapper.__name__ = method.__name__
+    return wrapper
+
 class Name(object):
     """The name of a person
     
@@ -50,7 +63,7 @@ class Name(object):
         return self.to_string() != other.to_string()
     
     def from_args(self, **args):
-        volledige_naam = args.get('volledige_naam',  '')
+        volledige_naam = args.get('volledige_naam', '')
         self.sort_name = args.get('sort_name', None)
         #store the data as an xml Element
         ### Create an XML structure
@@ -354,16 +367,15 @@ class Name(object):
         return s.strip()
     
      
-    
-    @instance.memoize
+    @cached
     def guess_geslachtsnaam(self, hints=[], change_xml=True):
         """Try to guess the geslachtsnaam, and return it
         
         arguments:
-	         - change_xml. 
-	           NOTA BENE: If True, this has a side effect that the XML is changed
-	         - hints: a list with one or more of the following hints: 
-	             ['startswithgeslachtsnaam']
+             - change_xml. 
+               NOTA BENE: If True, this has a side effect that the XML is changed
+             - hints: a list with one or more of the following hints: 
+                 ['startswithgeslachtsnaam']
         returns:
              None if no geslachtsnaam is found
              The guessed string if such a name is found
@@ -394,7 +406,6 @@ class Name(object):
         """ """
         orig_naam = self._root.text
         guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, hints)
-                   
         if guessed_geslachtsnaam and change_xml:
             guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
             el_name = SubElement(self._root, 'name')
@@ -403,7 +414,7 @@ class Name(object):
             idx = orig_naam.rfind(guessed_geslachtsnaam)
             self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
         return guessed_geslachtsnaam
-   
+    @cached
     def guess_normal_form2(self, change_xml=True):
         """return 'normal form' of the name (prepositie voornaam intrapostie geslachstsnaam postpostie)
         
@@ -430,7 +441,7 @@ class Name(object):
         result = remove_parenthesized(result)
         result = fix_capitals(result)
         return result
-    @instance.memoize
+    @cached
     def guess_normal_form(self, change_xml=True, ):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
         
@@ -463,8 +474,7 @@ class Name(object):
         s = remove_parenthesized(s)
         result = fix_capitals(s)
         return result
-
-    @instance.memoize
+    @cached
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
         return u''.join(s[0] for s in wordsplit_re.findall(s)
@@ -480,7 +490,7 @@ class Name(object):
         s = unicode(s)
         s = s.strip()
         return s
-    @instance.memoize
+    @cached
     def soundex_nl(self, s=None, length=4, group=1):
         if s is None:
             s = self.guess_normal_form()
@@ -490,7 +500,7 @@ class Name(object):
     def _name_parts(self):
         s = self.serialize()
         return re.findall('\S+', s)
-    @instance.memoize
+    @cached
     def contains_initials(self):
         """Return True if the name contains initials"""
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS
@@ -499,5 +509,26 @@ class Name(object):
             if p.endswith('.') and p not in VOORVOEGSELS_EN_TERRITORIALE_TITELS:
                 return True
         return False
-            
+
+    def compute_attributes_to_cache(self):
+        " Return a list of bound methods that were decorated with @cache"
+        res = {}
+        for method in self._get_methods_to_cache():
+            res[method.__name__] = method()
+        return res
+    def _get_methods_to_cache(self):
+        " Precompute values for methods decorated with @cache"
+        methods_to_cache = []
+        for a in dir(self):
+            attribute = getattr(self, a)
+            if getattr(attribute,'_cache_decorated_method', False):
+                methods_to_cache.append(attribute)
+        return methods_to_cache
+    def set_precomputed_data(self, data):
+        """ Call this method with the return value of compute_attributes_to_cache.
+            After the call, all decorated methods will returned the cached values.
+        """
+        self._cache = data
+
 Naam = Name #for backwards compatibility
+
