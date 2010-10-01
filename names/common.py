@@ -79,7 +79,7 @@ def encodable(s, encoding):
     try:
         s.encode(encoding)
         return True 
-    except:
+    except UnicodeEncodeError:
         return False 
 
 def coerce_to_ascii(s):
@@ -106,7 +106,7 @@ def coerce_to_encodable(s, encoding):
         s = unicode(s)
     try:
         s.encode(encoding)
-    except:
+    except UnicodeEncodeError:
         if encoding.lower() in ['latin1', 'iso-8859-1']:
             d = {
                  r'\u0192': '&#x0192;', #'LATIN SMALL LETTER F WITH HOOK'
@@ -201,7 +201,7 @@ def to_ascii(s):
     """
     try:
         new_s = s.decode('ascii')
-    except:
+    except UnicodeEncodeError:
         new_s = ''
         while s:
             c, s = (s[0], s[1:])
