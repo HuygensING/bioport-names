@@ -13,7 +13,6 @@ class NameTestCase(unittest.TestCase):
         pass
  
     def test_guess_geslachtsnaam(self):
-#        assert 0, Name()._guess_geslachtsnaam_in_string('Bec(q)-Crespin, Josina du')
         for n, wanted_result in [
             ('Jelle Gerbrandy', 'Gerbrandy'),
             ('Boudewijn (zie van der AA.)', 'Boudewijn'),
@@ -32,6 +31,10 @@ class NameTestCase(unittest.TestCase):
             ('Johann VII' , 'Johann' ), 
             ('Johann (Johan) VII' , 'Johann' ), 
             ('koning Willem III' , 'Willem' ), 
+            ('Bonnet-Broederhart. A.G.' , 'Bonnet-Broederhart.' ), 
+            ('III' , 'III' ), 
+            ('Th.W. Engelmann', 'Engelmann'),
+#            ('Auger O' , 'Auger' ), 
             ]:
             guessed = Name(n).guess_geslachtsnaam()
             self.assertEqual(guessed, wanted_result, '%s "%s"-"%s"' % (n, guessed, wanted_result))
@@ -40,6 +43,8 @@ class NameTestCase(unittest.TestCase):
         for n, wanted_result in [
              (Name('Arien A'), 'A, Arien'),
              (Name().from_args(geslachtsnaam='A', volledige_naam='Arien A'), 'A, Arien'),
+             (Name('Brugse Meester van 1493'), 'Brugse Meester van 1493'),
+             (Name('Th.W. Engelmann'), 'Engelmann, Th.W.'),
              ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)

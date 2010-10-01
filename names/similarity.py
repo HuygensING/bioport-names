@@ -1,12 +1,12 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import re
-import difflib
-from difflib import SequenceMatcher
+#import difflib
+#from difflib import SequenceMatcher
 import Levenshtein
 from names.soundex import soundexes_nl, soundex_nl
-from names.common import PREFIXES, coerce_to_unicode, to_ascii,remove_stopwords, STOP_WORDS
-from names.memoize import cache
+from names.common import PREFIXES, to_ascii,remove_stopwords, STOP_WORDS
+#from names.memoize import cache
 
 def split(s):
     return re.split('[ |\-]*', s)

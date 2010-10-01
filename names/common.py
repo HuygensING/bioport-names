@@ -72,6 +72,7 @@ def serialize(n, exclude=[], include_tail=True):
     if n.tail and include_tail:
         result += n.tail
     return result
+
 def encodable(s, encoding):
     """is s encodable in encoding"""
     if  type(s) != type(r''):
@@ -188,6 +189,7 @@ def remove_parenthesized(s):
 def remove_double_spaces(s):
     s = re.sub('\s+', ' ', s)
     return s
+
 def to_ascii(s):
     """return ascii version of character
     
@@ -201,7 +203,7 @@ def to_ascii(s):
     """
     try:
         new_s = s.decode('ascii')
-    except UnicodeEncodeError:
+    except UnicodeDecodeError:
         new_s = ''
         while s:
             c, s = (s[0], s[1:])

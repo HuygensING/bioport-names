@@ -3,13 +3,14 @@ from lxml import etree
 from lxml.etree import Element, SubElement
 from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
                     serialize, remove_parenthesized, html2unicode, to_ascii,
-                    POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS)
+                    POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS, 
+                    coerce_to_unicode)
 #from similarity import  soundexes_nl
-from plone.memoize import instance
+#from plone.memoize import instance
 from names.soundex import soundexes_nl
 from names.common import R_ROMANS
 import re
-import cPickle
+#import cPickle
 
 wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
@@ -328,17 +329,18 @@ class Name(object):
         elif 'startswithgeslachtsnaam' in hints: #er staat geen komma (ofzo) in, maar we weten wel dat de naam
             #met een achternaam begint: dan moet het wel de hele string zijn
             guessed_name = name 
-        elif re.match('[A-Z]\.', name):
+        elif re.search('[A-Z]\.', name):
             #als de naam met een initiaal begint, fitleren we alle intiitale er uit, en is de rest de achternaam
-            guessed_name = name[re.match('([A-Z]\.)+',name).end():] 
+#            guessed_name = name[re.match('([A-Z]\.)+',name).end():] 
+            guessed_name = re.sub('(Th\.|[A-Z]\.)+','', name) 
         elif ' ' in name:
             candidates = re.split('\s+', name)
             if candidates[-1] in ROMANS:
                 #if the name ends with a roman numeral, (as in "Karel II") this is often not a geslachtsnaam
-                #but we treat is like to anyway, because it is useful for sotring etc (XXX not sure if this is a good idea)
                 #(note American names as well, such as "John Styuivesandt III"
-#                guessed_name = ''
                 guessed_name = candidates[-2]
+            elif candidates[-1].isdigit():
+                guessed_name = ''
             elif candidates[-1] in POSTFIXES:
                 guessed_name = ' '.join(candidates[-2:])
             else:
@@ -355,6 +357,9 @@ class Name(object):
                         guessed_name = self._guess_geslachtsnaam_in_string(name[:i], hints) 
                         guessed_name = guessed_name + name[i:] 
         guessed_name = self._strip_tussenvoegels(guessed_name)
+#        for c in '.?,':
+#            if guessed_name.endswith(c): 
+#                guessed_name = guessed_name[:-1]
         return guessed_name
         
     def _strip_tussenvoegels(self,s):
@@ -413,6 +418,7 @@ class Name(object):
             el_name.text = guessed_geslachtsnaam
             idx = orig_naam.rfind(guessed_geslachtsnaam)
             self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
+            
         return guessed_geslachtsnaam
     @cached
     def guess_normal_form2(self, change_xml=True):

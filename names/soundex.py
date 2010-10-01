@@ -1,6 +1,6 @@
 import re
 from common import *
-from plone.memoize.ram import cache
+#from plone.memoize.ram import cache
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 
 
