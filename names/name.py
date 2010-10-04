@@ -15,14 +15,19 @@ import re
 wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITELS)
+ROMANS_FROZENSET = frozenset(ROMANS)
 
 def cached(method):
+    def hit(*args, **kwargs):
+        return args[0]._cache[method.__name__]
+    def miss(*args, **kwargs):
+        return method(*args, **kwargs)
     def wrapper(*args, **kwargs):
         # only cache default calls
         if hasattr(args[0], '_cache') and len(args) == 1 and len(kwargs) == 0:
-            return args[0]._cache[method.__name__]
+            return hit(*args, **kwargs)
         else:
-            return method(*args, **kwargs)
+            return miss(*args, **kwargs)
     wrapper._cache_decorated_method = True
     wrapper.__name__ = method.__name__
     return wrapper
@@ -70,7 +75,9 @@ class Name(object):
         ### Create an XML structure
         self._root = Element('persName')
         last_element = None
+
         if volledige_naam:
+
 #            volledige_naam = html2unicode(volledige_naam)
             self._root.text = volledige_naam
 #            self._insert_constituent('geslachtsnaam', args.get('geslachtsnaam'))
@@ -97,7 +104,9 @@ class Name(object):
                     if last_element is not None:
                         last_element.tail = ' '
                     last_element = el
-
+        if volledige_naam and not self.geslachtsnaam():
+            # we were instantiated from a string.
+            self.store_guessed_geslachtsnaam()
         return self
 
     def html2unicode(self):
@@ -241,7 +250,7 @@ class Name(object):
 #            self.postpositie(),
 #            self.serialize(self._root),
 #            ] if s])
-        base = self.guess_normal_form(change_xml=False)
+        base = self.guess_normal_form()
         base = base.replace(',', '')
         base = base.strip()
         base = base.lower()
@@ -316,12 +325,10 @@ class Name(object):
             a substring of s
         """
         name = s
-            
         #anything between brackets is NOT a last name
         #(but we leave the brackets in "Ha(c)ks")
         name = re.sub(r'(?<!\w)\(.*?\)', '', name)
         name = name.strip()
-        
         if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
             guessed_name = name.split(', ')[0] 
         elif ' - ' in name: #a real use case: "Hees - B.P. van"
@@ -329,13 +336,13 @@ class Name(object):
         elif 'startswithgeslachtsnaam' in hints: #er staat geen komma (ofzo) in, maar we weten wel dat de naam
             #met een achternaam begint: dan moet het wel de hele string zijn
             guessed_name = name 
-        elif re.search('[A-Z]\.', name):
+        elif re.match('(Th\.|[A-Z]\.)+',name):
             #als de naam met een initiaal begint, fitleren we alle intiitale er uit, en is de rest de achternaam
-#            guessed_name = name[re.match('([A-Z]\.)+',name).end():] 
-            guessed_name = re.sub('(Th\.|[A-Z]\.)+','', name) 
+            guessed_name = name[re.match('(Th\.|[A-Z]\.)+',name).end():] 
+            #guessed_name = re.sub('(Th\.|[A-Z]\.)+','', name) 
         elif ' ' in name:
             candidates = re.split('\s+', name)
-            if candidates[-1] in ROMANS:
+            if candidates[-1] in ROMANS_FROZENSET:
                 #if the name ends with a roman numeral, (as in "Karel II") this is often not a geslachtsnaam
                 #(note American names as well, such as "John Styuivesandt III"
                 guessed_name = candidates[-2]
@@ -343,8 +350,11 @@ class Name(object):
                 guessed_name = ''
             elif candidates[-1] in POSTFIXES:
                 guessed_name = ' '.join(candidates[-2:])
+            elif re.match('(Th\.|[A-Z]\.)+',candidates[-1]):
+                # only initials in last element
+                guessed_name = ' '.join(candidates[:-1]) # take the rest
             else:
-                guessed_name = candidates[-1]  
+                guessed_name = candidates[-1]
         else:
             guessed_name = name 
             
@@ -370,15 +380,23 @@ class Name(object):
                 s = self._strip_tussenvoegels(s)
                 break
         return s.strip()
-    
-     
+
+    def store_guessed_geslachtsnaam(self):
+        orig_naam = self._root.text
+        guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
+        if guessed_geslachtsnaam:
+            guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
+            el_name = SubElement(self._root, 'name')
+            el_name.set('type','geslachtsnaam')
+            el_name.text = guessed_geslachtsnaam
+            idx = orig_naam.rfind(guessed_geslachtsnaam)
+            self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
+
     @cached
-    def guess_geslachtsnaam(self, hints=[], change_xml=True):
+    def guess_geslachtsnaam(self, hints=[]):
         """Try to guess the geslachtsnaam, and return it
         
         arguments:
-             - change_xml. 
-               NOTA BENE: If True, this has a side effect that the XML is changed
              - hints: a list with one or more of the following hints: 
                  ['startswithgeslachtsnaam']
         returns:
@@ -387,7 +405,8 @@ class Name(object):
          
         >>> name.to_string()
         '<persName>Puk, Pietje</persName>
-        >>> name.guess_geslachtsnaam(change_xml=True)
+        >>> name.store_guessed_geslachtsnaam()
+        >>> name.guess_geslachtsnaam()
         'Puk'
         >>> name.to_string()
         '<persName><name type="geslachtsnaam">Puk</name>, Pietje</persName>
@@ -402,30 +421,23 @@ class Name(object):
             return self.geslachtsnaam()
         
         elif self._root.text and self._root.text.strip(): #we only try to guess if there is text that is not marked as a part of a name
-            return self._guess_geslachtsnaam(change_xml=change_xml, hints=hints)
+            return self._guess_geslachtsnaam(hints=hints)
                     
         else: #in case we did not find a last name, and return None
             return None
         
-    def _guess_geslachtsnaam(self, change_xml,hints):
+    def _guess_geslachtsnaam(self, hints):
         """ """
         orig_naam = self._root.text
         guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, hints)
-        if guessed_geslachtsnaam and change_xml:
-            guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
-            el_name = SubElement(self._root, 'name')
-            el_name.set('type','geslachtsnaam')
-            el_name.text = guessed_geslachtsnaam
-            idx = orig_naam.rfind(guessed_geslachtsnaam)
-            self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
-            
         return guessed_geslachtsnaam
+
     @cached
-    def guess_normal_form2(self, change_xml=True):
-        """return 'normal form' of the name (prepositie voornaam intrapostie geslachstsnaam postpostie)
-        
-        NB: we rather simply serialize 'as is' then make a mistake, so we only change the order of the name if we are pretty sure
-         
+    def guess_normal_form2(self):
+        """return 'normal form' of the name
+           (prepositie voornaam intrapostie geslachstsnaam postpostie)
+           NB: we rather simply serialize 'as is' then make a mistake,
+           so we only change the order of the name if we are pretty sure
         """
         n = self._root
         last_name = self.guess_geslachtsnaam()
@@ -448,7 +460,7 @@ class Name(object):
         result = fix_capitals(result)
         return result
     @cached
-    def guess_normal_form(self, change_xml=True, ):
+    def guess_normal_form(self):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
         
         returns:
@@ -461,7 +473,7 @@ class Name(object):
         except AttributeError:
             self.from_string(self.xml)
             
-        self.guess_geslachtsnaam(change_xml=change_xml)
+        self.guess_geslachtsnaam()
         
         last_name = self.geslachtsnaam()
         
@@ -497,11 +509,30 @@ class Name(object):
         s = s.strip()
         return s
     
-    @cached
     def soundex_nl(self, s=None, length=4, group=1):
+        if group == 1:
+            res = self._soundex_group1(s)
+        elif group == 2:
+            res = self._soundex_group2(s)
+        else:
+            raise Exception('"group" argument must be either 1 or 2')
+        if length == -1:
+            return res
+        else:
+            return list(set([a[:length] for a in res]))
+
+    @cached
+    def _soundex_group1(self, s=None):
         if s is None:
             s = self.guess_normal_form()
-        result = soundexes_nl(s, length=length, group=group, filter_initials=True)
+        result = soundexes_nl(s, group=1, filter_initials=True)
+        return result 
+    
+    @cached
+    def _soundex_group2(self, s=None):
+        if s is None:
+            s = self.guess_normal_form()
+        result = soundexes_nl(s, group=2, filter_initials=True)
         return result 
     
     def _name_parts(self):
