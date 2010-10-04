@@ -19,8 +19,8 @@ class NameTestCase(unittest.TestCase):
             ('Gerbrandy, Jelle', 'Gerbrandy'),
             ('C.H.Veenstra', 'Veenstra'),
             ('A.A.R. Bastiaensen CM', 'Bastiaensen CM'),
-			('Yvette Marcus-de Groot', 'Marcus-de Groot'),
-			('S. de Groot', 'Groot'),
+            ('Yvette Marcus-de Groot', 'Marcus-de Groot'),
+            ('S. de Groot', 'Groot'),
             ('Willy Smit-Buit' , 'Smit-Buit' ), 
             ('Hendrik', 'Hendrik'),
             ('Bec(q)-Crespin, Josina du', 'Bec(q)-Crespin'), 
@@ -48,8 +48,8 @@ class NameTestCase(unittest.TestCase):
              ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
-                                                
-            
+
+
     def test_html_codes(self):
         n = Name('W&eacute;l?')
         n.html2unicode()
@@ -64,7 +64,8 @@ class NameTestCase(unittest.TestCase):
             
             self.assertEqual(Name(s)._strip_tussenvoegels(s), result)
     def test_to_xml(self):
-        self.assertEqual(Name('abc').to_string(), '<persName>abc</persName>')
+        self.assertEqual(Name('abc').to_string(),
+            u'<persName><name type="geslachtsnaam">abc</name></persName>')
 
 
     def test_from_xml(self):
@@ -113,33 +114,33 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.to_string(), s)
         
         n = Name(volledige_naam='Gerbrandy, Jelle')
-        s = '<persName>Gerbrandy, Jelle</persName>'
+        s = '<persName><name type="geslachtsnaam">Gerbrandy</name>, Jelle</persName>'
         self.assertEqual(n.to_string(), s)
         
          
     def test_diacritics(self):
         n = Name(u'Wét')
-        
         el = etree.Element('test')
         el.text = u'Wét'
-        s = u'<persName>Wét</persName>'
+        s = u'<persName><name type="geslachtsnaam">W\xe9t</name></persName>'
         self.assertEqual(n.to_string(), s)
-        
+
     def test_serialize(self):
         s = '<a>a<b>b</b> c</a>'
         self.assertEqual(Name().serialize(etree.fromstring(s)), 'ab c')
-        
+
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
         naam = Name().from_string(s)
         self.assertEqual(serialize(naam._root), 'Jelle Gerbrandy')
         self.assertEqual(naam.serialize(naam._root), 'Jelle Gerbrandy')
         self.assertEqual(naam.serialize(), 'Jelle Gerbrandy')
         self.assertEqual(naam.serialize(exclude='geslachtsnaam'), 'Jelle')
-        
+
         naam = Name('Gerbrandy, Jelle')
-        naam.guess_geslachtsnaam(change_xml=True)
+        naam.guess_geslachtsnaam()
+        naam.store_guessed_geslachtsnaam()
         self.assertEqual(naam.to_string(), '<persName><name type="geslachtsnaam">Gerbrandy</name>, Jelle</persName>')
-        
+
         self.assertEqual(naam.serialize(exclude=['geslachtsnaam']), ', Jelle')
 
     def test_idempotence(self):
@@ -274,8 +275,8 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.sort_key()[:15], 'eerbrandy jelle')
 
         n = Name(u'São Paolo')
-        self.assertEqual(n.geslachtsnaam(), '')
-        self.assertEqual(n.sort_key().split()[0], 'sao')
+        self.assertEqual(n.geslachtsnaam(), 'Paolo') # Automatically guessed
+        self.assertEqual(n.sort_key().split()[0], 'paolo')
         
         n = Name('(Hans) Christian')
         self.assertEqual(n.sort_key().split()[0], 'christian')
@@ -370,8 +371,17 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(naam.geslachtsnaam(), 'Reve')
     
     def test_name_parts(self):
-        self.assertEqual(Name('abc. DE. F;dk. Genoeg-Van')._name_parts(), [u'abc.', u'DE.', 'F;dk.', 'Genoeg-Van'])
-        
+        name_parts = Name('abc. DE. F;dk. Genoeg-Van')._name_parts()
+        self.assertEqual(name_parts, [u'abc.', u'DE.', 'F;dk.', 'Genoeg-Van'])
+
+    def test_geslachtsnaam_guess(self):
+        problematic_names = ['abc. DE. F;dk. Genoeg-Van']
+        for namestr in problematic_names:
+            name = Name(namestr)
+            should_be = re.sub('<[^>]+>', '', name.to_string())
+            self.assertEqual(namestr, should_be)
+
+
     def test_contains_initials(self):
         self.assertEqual(Name('J.K. Rowling').guess_geslachtsnaam(), 'Rowling')
         self.assertEqual(Name('J.K. Rowling').contains_initials(), True)
