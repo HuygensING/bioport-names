@@ -198,7 +198,7 @@ def soundex_nl(s, length=4, group=1, wildcards=False):
     if length > 0:
         s = s[:length]
         
-#    s = unicode(s)
+    s = unicode(s)
     
     return s
 
