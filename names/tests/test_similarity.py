@@ -157,8 +157,8 @@ class NaamSimilarityTestCase(TestCase):
             Name('Constant Rebecque De Villars, Jules Thierry Nicolas baron de'),
             Name('Constant Rebecque, J.V. baron de'),
             Name('Rebecque, J.F. de Constant'),
-            Name('Constant Rebecque, Mr. Charles Theodore Jean baron de'),
             Name('Constantijn'),
+            Name('Constant Rebecque, Mr. Charles Theodore Jean baron de'),
             
         ])    
         self.assert_similarity_order([

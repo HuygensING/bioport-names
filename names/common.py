@@ -254,6 +254,7 @@ VOORVOEGSELS = [
    r'dr',                
    r'Dr',
    r'jhr',
+   r'Jhr',
    r'prof',
    r'Prof',
    

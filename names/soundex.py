@@ -136,9 +136,9 @@ def soundexes_nl(s, length=-1, group=2,
         
     if filter_custom:
         ls = [s for s in ls if s not in filter_custom]
-    #filter initialen er uit, behalve eerste en laate, want die kunnen nog wel de achternaam zijn
-    if filter_initials and  len(ls) > 1:
-        ls =[s for s in ls[:] if len(s) > 1]
+    #filter initials  - these are all words of lenght 1
+    if len(ls) > 1 and  filter_initials and  len(ls) > 1:
+        ls = [s for s in ls[:] if len(s) > 1]
 
     result  = [soundex_nl(s, length=length, group=group, wildcards=wildcards) for s in ls] 
     result = list(set(result)) #remove duplicates
