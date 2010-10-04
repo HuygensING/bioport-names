@@ -496,6 +496,7 @@ class Name(object):
         s = unicode(s)
         s = s.strip()
         return s
+    
     @cached
     def soundex_nl(self, s=None, length=4, group=1):
         if s is None:
@@ -506,6 +507,7 @@ class Name(object):
     def _name_parts(self):
         s = self.serialize()
         return re.findall('\S+', s)
+    
     @cached
     def contains_initials(self):
         """Return True if the name contains initials"""

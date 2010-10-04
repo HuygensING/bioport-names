@@ -203,7 +203,7 @@ def to_ascii(s):
     """
     try:
         new_s = s.decode('ascii')
-    except UnicodeDecodeError:
+    except (UnicodeDecodeError, UnicodeEncodeError):
         new_s = ''
         while s:
             c, s = (s[0], s[1:])

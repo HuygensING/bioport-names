@@ -7,12 +7,15 @@ from lxml import etree
 from names.common import *
 from names.soundex import soundex_nl, soundexes_nl
 
+def soundex_nl1(s, length=4):
+    return soundex_nl(s, length, group=1)
+
+def soundex_nl2(s, length=-1):
+    return soundex_nl(s, length, group=2)
 
 class SoundexNLTestCase(TestCase):
 
     def test_soundex_nl1(self):
-        def soundex_nl1(s, length=4):
-            return soundex_nl(s, length, group=1)
         self.assertEqual(soundex_nl1('Scholten', length=5), 'sg.lt')
         n1 = Name('Uyl')
         n2 = Name('Uijl')
@@ -36,10 +39,9 @@ class SoundexNLTestCase(TestCase):
         #diacritics?
         self.assertEqual(soundex_nl1(u'wél'), 'f.l') 
         self.assertEqual(soundex_nl1(u'bosma'), soundex_nl1(u'boschma')) 
+        self.assertEqual(Name('Pius IX').soundex_nl(), ['p.s', ])
 
     def test_soundex_nl2(self):
-        def soundex_nl2(s, length=-1):
-            return soundex_nl(s, length, group=2)
         # group 2 is de "fonetische soundex"       
         #c
         for s, wanted in [
@@ -133,8 +135,6 @@ class SoundexNLTestCase(TestCase):
             ('bosma',
              'boschma',
              ),
-            #not even sure what behavior we want here for roman numerals
-#            (u'VI', u'fi'),
             ]:
             n1 = ls[0]
             s1 = soundex_nl2(n1)
@@ -158,14 +158,19 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(soundexes_nl('don?er') , ['doner'])
         self.assertEqual(soundexes_nl('don?er', wildcards=True) , ['don?er'])
         self.assertEqual(soundexes_nl('don*er', wildcards=True) , ['don*er'])
-        self.assertEqual(soundexes_nl('willem I' ) , ['i', 'filem' ])
+        self.assertEqual(soundexes_nl('willem I' ) , ['filem' ])
         self.assertEqual(soundexes_nl('heer' ) , [])
         self.assertEqual(soundexes_nl('jhr.' ) , [])
         
         
-def soundex_nl2(s, length=-1):
-    return soundex_nl(s, length, group=2)
-
+    def test_bioport_usecases(self):
+        """in the biographical portal,
+        soundexes_nl is used with the following arguments:
+            soundexes_nl(s, group=2, length=20, filter_initials=True, filter_stop_words=False)
+        """
+        bioport_soundex = lambda s: soundexes_nl(s, group=2, length=20, filter_initials=True, filter_stop_words=False)
+        self.assertEqual(set(bioport_soundex('Pius IX')), set(['pius', 'IX']))
+        
 class IdealWorldNLTestCase(TestCase):
     """ """
     def test1(self):

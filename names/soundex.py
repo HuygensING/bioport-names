@@ -127,12 +127,13 @@ def soundexes_nl(s, length=-1, group=2,
     
     #splits deze op punten, spaties, kommas, etc
     #ls = re.split('[ \-\,\.]', s.lower())
-    s = s.lower()
+#    s = s.lower()
     ls = re.findall('[\w\?\*]+', s, re.UNICODE)
     
     #filter een aantal stopwoorden
     if filter_stop_words:
         ls = [s for s in ls if s not in STOP_WORDS_frozenset]
+        
     if filter_custom:
         ls = [s for s in ls if s not in filter_custom]
     #filter initialen er uit, behalve eerste en laate, want die kunnen nog wel de achternaam zijn
@@ -150,13 +151,13 @@ def _cache_key(funcobj, s, length=4, group=1, wildcards=False):
 def soundex_nl(s, length=4, group=1, wildcards=False):
     """
     return a string of length representing a phonetical canonical form of s
+    stab at giving names a simplified canonical form based on Dutch phonetics and spelling conventions
     
     arguments:
         s : a string
         length : an integer. Length=-1 transforms the whole string
         group : an integer [1, 2]
         wildcards : if True, wildcard element (?, *) remain in place
-    stab at giving names a simplified canonical form based on Dutch phonetics and spelling conventions
     
     There are two groups:
         - group 1: identify lots
@@ -173,41 +174,32 @@ def soundex_nl(s, length=4, group=1, wildcards=False):
         #remove 'wildcard' characters
         s = re.sub('[\?\*]', '', s)
 
-
     #strip of certain prefixes
     #XXX this shoudl be in the regular expression specs
     for x in PREFIXES:
         if s.startswith(x):
             s = s[len(x):]
-
-
     if group == 1:
         groups = GROUPS1
     elif group == 2:
         groups = GROUPS2 
- 
     else:
         raise Exception('"group" argument must be either 1 or 2')
+    
     for k, regexp in groups:
         s = regexp.sub(k, s)
         while regexp.search(s):
             s = regexp.sub(k, s)
                 
-#
-#    if group == 1:
-#         s = GROUPS1_SINGLEREGEXP.sub(lambda mo: mo.expand(GROUPS1_LOOKUP[mo.lastindex]), s)
-#    elif group == 2:
-#         s = GROUPS2_SINGLEREGEXP.sub(lambda mo: mo.expand(GROUPS2_LOOKUP[mo.lastindex]), s)
-#    else:
-#        raise Exception('"group" argument must be either 1 or 2')
-
     if s.endswith('.'): 
         s = s[:-1]
     if not s: 
         s = '.'
     if length > 0:
         s = s[:length]
-    s = unicode(s)
+        
+#    s = unicode(s)
+    
     return s
 
  
