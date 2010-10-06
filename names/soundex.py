@@ -1,19 +1,25 @@
-import re
-from common import *
+try:
+    import re2 as re
+except ImportError:
+    import re
+
+from common import STOP_WORDS, ROMANS, PREFIXES, to_ascii
 #from plone.memoize.ram import cache
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
-
+ROMANS_frozenset = frozenset(ROMANS)
 
 #GROUPS1 defines the 'loose' soundex expression - many words have the same expression
 GROUPS1 = (
+            ('', ['^%s' % s for s in PREFIXES]),
             ('' ,['[^a-z]', 'en$', '^h']), #alleen alfabetische characters, strip h at start 
 #            ('', [r'^%s' % s for s in PREFIXES + ['h']]), 
 
-            ('.',['ah', 'eh','ij', 'a', 'e', 'i', 'o','u','y', r'\.\.\.', r'\.\.']), 
+            ('.',['ah', 'eh','ij', 'a', 'e', 'i', 'o','u','y',]),
+            ('.', [r'\.+',]	), 
             ('s',['z', 'ss', '(?<!^)sch']), #match 'sch' except when it is the start of the string 
             ('p',['b', 'pp']), 
             ('g',['ch', 'gg']), 
-            ('k',['q','kw', 'c', 'x', 'kk']),
+            ('k',['ck', 'q','kw', 'c', 'x', 'kk']),
             ('t',['d',  'tt']), #d, dt, tt, dd --> t
             ('f',['ph', 'v', 'w', 'ff']),
 #            ('h',[]),
@@ -25,6 +31,7 @@ GROUPS1 = (
 
 #GROUPS2 defines a somewhat stricter soundex expression than GROUPS1 - fewer words have the same expression
 GROUPS2 = (
+            ('', ['^%s' % s for s in PREFIXES]),
             ('' ,['[^a-z\?\*]']), # #remove all non-alphabetical characters, 
 #            ('' ,[r'\(', r'\)']),  #remove brackets (
             ('end', ['eind$',]), #are we sure we ant to do this?
@@ -38,7 +45,7 @@ GROUPS2 = (
             ('ek', ('ecque$',)),
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
-            ('s',['z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
+            ('s',['sz', 'z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
             ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant
             ('', ('(?<=..[bdfgjklmnprstvwzy])e$',)), #e at the aned of a word preceded by a consonant
 #            ('', ('(?<=en)s$',)),
@@ -56,10 +63,9 @@ GROUPS2 = (
 #            ('ei', ['eij', 'ey', 'y']), 
             ('p',['pp']), 
             ('b',['bb']), 
-            ('g',['ch', 'gg', 'gh', 'ng']), 
+            ('g',[ 'ngh','ch', 'gg', 'gh', 'ng',]), 
             ('qu', ['kw']),
-            ('x', ['ks'],),
-            ('k',['c', 'x', 'kk', ]),
+            ('k',['cks','ck', 'ks','c', 'kx', 'x', 'kk', ]),
             ('t',[ 'tt', 'd$', 'dt$', 'th','d(?=s)','(?<=n)dt','(?<=n)d',]),
             ('d',[ 'dd']),
             ('f',['ph', 'v', 'w', 'ff']),
@@ -75,7 +81,6 @@ GROUPS2 = (
             ('u', '5'),
             ('au', '6'),
             ('ui', '7'),
-            
 #            ('', '1234567890')
 )
 
@@ -165,41 +170,47 @@ def soundex_nl(s, length=4, group=1, wildcards=False):
         
     """
     #ignore Romans
-    if s in ROMANS:
+    if s in ROMANS_frozenset:
         return s
     
     s = s.lower()
     s = to_ascii(s)
     if not wildcards:
         #remove 'wildcard' characters
-        s = re.sub('[\?\*]', '', s)
+        s = s.replace('*', '').replace('?', '')
 
-    #strip of certain prefixes
-    #XXX this shoudl be in the regular expression specs
-    for x in PREFIXES:
-        if s.startswith(x):
-            s = s[len(x):]
+    #strip off certain prefixes
+    #XXX this should be in the regular expression specs
+#    for x in PREFIXES:
+#        if s.startswith(x):
+#            s = s[len(x):]
     if group == 1:
         groups = GROUPS1
     elif group == 2:
         groups = GROUPS2 
     else:
         raise Exception('"group" argument must be either 1 or 2')
-    
-    for k, regexp in groups:
-        s = regexp.sub(k, s)
-        while regexp.search(s):
-            s = regexp.sub(k, s)
-                
-    if s.endswith('.'): 
+
+    s = apply_regexps(s, groups)
+
+    if s.endswith('.'):
         s = s[:-1]
     if not s: 
-        s = '.'
+        s = u'.'
     if length > 0:
         s = s[:length]
         
     s = unicode(s)
-    
     return s
 
- 
+def apply_regexp(partial, retuple):
+    return retuple[1].sub(retuple[0], partial)
+def apply_regexps(original_string, regexps):
+    return reduce(apply_regexp, regexps, original_string)
+# The above two functions are an optimized version of the code below.
+# The use of ``reduce`` allows us to spare the for loop
+#    result = original_string
+#    for substitution, regexp in regexps:
+#        result = regexp.sub(substitution, result)
+#    return result
+
