@@ -34,8 +34,7 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(Name('rhood').soundex_nl(), ['r.t'])
         self.assertEqual(Name('zutphen').soundex_nl(), ['s.tf'])
         self.assertEqual(Name('Willem').soundex_nl(), ['f.l.'])
-        self.assertEqual(soundex_nl1('xx1'), 'k')
-        self.assertEqual(soundex_nl1('yyy22'), '.')
+
         #diacritics?
         self.assertEqual(soundex_nl1(u'wél'), 'f.l') 
         self.assertEqual(soundex_nl1(u'bosma'), soundex_nl1(u'boschma')) 
@@ -48,7 +47,6 @@ class SoundexNLTestCase(TestCase):
             #examples of soundex expressoins
             ('Huis', 'huis'),
             ('Huys', 'huis'),
-            ('XXX', 'k'),
             ('goed', 'got'),
             ('eijck', 'ik'),
             #ei, eij, ij, ey, y, i
@@ -135,6 +133,7 @@ class SoundexNLTestCase(TestCase):
             ('bosma',
              'boschma',
              ),
+             ("O'Connor", 'Connor'),
             ]:
             n1 = ls[0]
             s1 = soundex_nl2(n1)
