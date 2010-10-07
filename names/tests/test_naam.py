@@ -330,7 +330,6 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(Name('janssen, hendrik').soundex_nl(group=1), ['j.ns', '.ntr'])
         self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Name('aearssen,walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
-        self.assertEqual(Name('XXX').soundex_nl(), ['k'])
         self.assertEqual(Name('Jhr. Mr. K').soundex_nl(), ['k'])
     
 
