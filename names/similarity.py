@@ -124,14 +124,10 @@ class Similarity(object):
         weight_geslachtsnaam1 = 10.0 #distance between soundexes of geslachtsnamen
         weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
         weight_initials = 2 #distance between initials
-        #normal form of the name 
-        nf1 = n1.guess_normal_form()
-        nf2 = n2.guess_normal_form()
-        #remove diacritics
-        nf1 = to_ascii(nf1)
-        nf2 = to_ascii(nf2)
-        
-#        ratio_normal_form = Similarity.levenshtein_ratio(nf1, nf2)
+
+        nf1 = n1.get_ascii_normal_form()
+        nf2 = n2.get_ascii_normal_form()
+
         ratio_normal_form = Similarity.average_distance(split(nf1), split(nf2))
         #create a simkplified soundex set for this name
         #remove stopwords
@@ -139,8 +135,8 @@ class Similarity(object):
         nf2 = remove_stopwords( nf2)
         
         #we use the soundex_nl property of the name, so the property gets cached
-        se1 = n1.soundex_nl(nf1, group=2, length=-1)
-        se2 = n2.soundex_nl(nf2, group=2, length=-1)
+        se1 = n1.get_normal_form_soundex()
+        se2 = n2.get_normal_form_soundex()
         ratio_normal_form_soundex = Similarity.average_distance( se1, se2)
         
         #gelachtsnaam wordt op twee manieren met elkaar vergeleken
@@ -150,8 +146,10 @@ class Similarity(object):
         g2 = to_ascii(g2)
         if not optimize:
             #de soundexes van de achternaam worden meegewoen
-            g1_soundex = n1.soundex_nl(g1, group=2, length=-1)
-            g2_soundex = n2.soundex_nl(g2, group=2, length=-1)
+            #g1_soundex = n1.soundex_nl(g1, group=2, length=-1)
+            g1_soundex = n1.geslachtsnaam_soundex()
+            #g2_soundex = n2.soundex_nl(g2, group=2, length=-1)
+            g2_soundex = n2.geslachtsnaam_soundex()
             ratio_geslachtsnaam1 = Similarity.average_distance(g1_soundex, g2_soundex)
         else:
             ratio_geslachtsnaam1 = 1 
@@ -199,19 +197,6 @@ class Similarity(object):
         final_ratio = counter/numerator
 
         if explain:
-#            d = [
-#                ('ratio_normal_form',ratio_normal_form,),
-#                ('weight_normal_form',weight_normal_form, ),
-#                ('ratio_geslachtsnaam1 (soundex)', ratio_geslachtsnaam1, ),
-#                ('weight_geslachtsnaam1', weight_geslachtsnaam1, ),
-#                ('ratio_geslachtsnaam2 (letterlijke geslachtsnaam)', ratio_geslachtsnaam2, ),
-#                ('weight_geslachtsnaam2', weight_geslachtsnaam2, ),
-#                ('ratio_initials', ratio_initials, ),
-#                ('weight_initials', weight_initials, ),
-#                ('final_ratio', final_ratio,),
-#                ('counter',counter,),
-#                ('numerator', numerator,),
-#            ]
             s = '-' * 100 + '\n'
             s += 'Naam1: %s [%s] [%s] %s\n' % (n1, n1_initials, n1.guess_normal_form(), se1)
             s += 'Naam2: %s [%s] [%s] %s\n' % (n2, n2_initials, n2.guess_normal_form(), se2)

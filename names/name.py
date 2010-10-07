@@ -4,13 +4,13 @@ from lxml.etree import Element, SubElement
 from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
                     serialize, remove_parenthesized, html2unicode, to_ascii,
                     POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS, 
-                    coerce_to_unicode)
+                    coerce_to_unicode, remove_stopwords)
 #from similarity import  soundexes_nl
 #from plone.memoize import instance
 from names.soundex import soundexes_nl
 from names.common import R_ROMANS
+
 import re
-#import cPickle
 
 wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
@@ -18,16 +18,19 @@ VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITE
 ROMANS_FROZENSET = frozenset(ROMANS)
 
 def cached(method):
-    def hit(*args, **kwargs):
-        return args[0]._cache[method.__name__]
-    def miss(*args, **kwargs):
-        return method(*args, **kwargs)
+    methodname = method.__name__
     def wrapper(*args, **kwargs):
+        cache = getattr(args[0], '_cache', None)
         # only cache default calls
-        if hasattr(args[0], '_cache') and len(args) == 1 and len(kwargs) == 0:
-            return hit(*args, **kwargs)
+        if cache and len(args) == 1 and len(kwargs) == 0:
+            if methodname in cache:
+                return cache[methodname]
+            else:
+                value = method(*args, **kwargs)
+                cache[methodname] = value
+                return value
         else:
-            return miss(*args, **kwargs)
+            return method(*args, **kwargs)
     wrapper._cache_decorated_method = True
     wrapper.__name__ = method.__name__
     return wrapper
@@ -298,11 +301,18 @@ class Name(object):
     # unfortunately tests won't pass with this enabled, because
     # the object changes between subsequent calls to this method,
     # and memoize gives the stale result
+    @cached
     def geslachtsnaam(self):
         result = self._root.xpath('./name[@type="geslachtsnaam"]/text()')
         result = u' '.join(result)  
         return result
-        
+    @cached
+    def geslachtsnaam_soundex(self):
+        return self.soundex_nl(
+            to_ascii(self.geslachtsnaam()),
+            group=2, length=-1
+        )
+
     def postpositie(self):
         result = self._root.xpath('./name[@type="postpositie"]/text()')
         result = u' '.join(result)
@@ -419,13 +429,11 @@ class Name(object):
         """
         if self.geslachtsnaam(): #if we already have an explicitly given geslachtnaam, we dont try to guess, but return it
             return self.geslachtsnaam()
-        
         elif self._root.text and self._root.text.strip(): #we only try to guess if there is text that is not marked as a part of a name
             return self._guess_geslachtsnaam(hints=hints)
-                    
         else: #in case we did not find a last name, and return None
             return None
-        
+
     def _guess_geslachtsnaam(self, hints):
         """ """
         orig_naam = self._root.text
@@ -459,6 +467,21 @@ class Name(object):
         result = remove_parenthesized(result)
         result = fix_capitals(result)
         return result
+
+    @cached
+    def get_ascii_normal_form(self):
+        return to_ascii(self.guess_normal_form())
+
+    @cached
+    def get_normal_form_soundex(self):
+        return self.soundex_nl(
+            remove_stopwords(self.get_ascii_normal_form()), group=2, length=-1
+        )
+
+    @cached
+    def get_ascii_geslachtsnaam(self):
+        return to_ascii(self.geslachtsnaam())
+
     @cached
     def guess_normal_form(self):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
@@ -492,6 +515,7 @@ class Name(object):
         s = remove_parenthesized(s)
         result = fix_capitals(s)
         return result
+
     @cached
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
@@ -516,7 +540,7 @@ class Name(object):
             res = self._soundex_group2(s)
         else:
             raise Exception('"group" argument must be either 1 or 2')
-        if length == -1:
+        if length < 0:
             return res
         else:
             return list(set([a[:length] for a in res]))
@@ -534,6 +558,7 @@ class Name(object):
             s = self.guess_normal_form()
         result = soundexes_nl(s, group=2, filter_initials=True)
         return result 
+    
     
     def _name_parts(self):
         s = self.serialize()
