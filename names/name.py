@@ -17,23 +17,6 @@ STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITELS)
 ROMANS_FROZENSET = frozenset(ROMANS)
 
-def cached(method):
-    methodname = method.__name__
-    def wrapper(*args, **kwargs):
-        cache = getattr(args[0], '_cache', None)
-        # only cache default calls
-        if cache and len(args) == 1 and len(kwargs) == 0:
-            if methodname in cache:
-                return cache[methodname]
-            else:
-                value = method(*args, **kwargs)
-                cache[methodname] = value
-                return value
-        else:
-            return method(*args, **kwargs)
-    wrapper._cache_decorated_method = True
-    wrapper.__name__ = method.__name__
-    return wrapper
 
 class Name(object):
     """The name of a person
@@ -301,12 +284,12 @@ class Name(object):
     # unfortunately tests won't pass with this enabled, because
     # the object changes between subsequent calls to this method,
     # and memoize gives the stale result
-    @cached
+
     def geslachtsnaam(self):
         result = self._root.xpath('./name[@type="geslachtsnaam"]/text()')
         result = u' '.join(result)  
         return result
-    @cached
+
     def geslachtsnaam_soundex(self):
         return self.soundex_nl(
             to_ascii(self.geslachtsnaam()),
@@ -404,17 +387,16 @@ class Name(object):
             #we already have the last name explicitly stored in the XML, so we dont do anything
             pass
         else:
-	        orig_naam = self._root.text
-	        guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
-	        if guessed_geslachtsnaam:
-	            guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
-	            el_name = SubElement(self._root, 'name')
-	            el_name.set('type','geslachtsnaam')
-	            el_name.text = guessed_geslachtsnaam
-	            idx = orig_naam.rfind(guessed_geslachtsnaam)
-	            self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
+            orig_naam = self._root.text
+            guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
+            if guessed_geslachtsnaam:
+                guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
+                el_name = SubElement(self._root, 'name')
+                el_name.set('type','geslachtsnaam')
+                el_name.text = guessed_geslachtsnaam
+                idx = orig_naam.rfind(guessed_geslachtsnaam)
+                self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
 
-    @cached
     def guess_geslachtsnaam(self, hints=[]):
         """Try to guess the geslachtsnaam, and return it
         
@@ -452,7 +434,7 @@ class Name(object):
         guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, hints)
         return guessed_geslachtsnaam
 
-    @cached
+
     def guess_normal_form2(self):
         """return 'normal form' of the name
            (prepositie voornaam intrapostie geslachstsnaam postpostie)
@@ -480,21 +462,7 @@ class Name(object):
         result = fix_capitals(result)
         return result
 
-    @cached
-    def get_ascii_normal_form(self):
-        return to_ascii(self.guess_normal_form())
 
-    @cached
-    def get_normal_form_soundex(self):
-        return self.soundex_nl(
-            remove_stopwords(self.get_ascii_normal_form()), group=2, length=-1
-        )
-
-    @cached
-    def get_ascii_geslachtsnaam(self):
-        return to_ascii(self.geslachtsnaam())
-
-    @cached
     def guess_normal_form(self):
         """return 'normal form' of the name (Geslachtsnaam, prepositie voornaam intrapostie, postpostie)
         
@@ -528,7 +496,7 @@ class Name(object):
         result = fix_capitals(s)
         return result
 
-    @cached
+
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
         return u''.join(s[0] for s in wordsplit_re.findall(s)
@@ -557,14 +525,14 @@ class Name(object):
         else:
             return list(set([a[:length] for a in res]))
 
-    @cached
+
     def _soundex_group1(self, s=None):
         if s is None:
             s = self.guess_normal_form()
         result = soundexes_nl(s, group=1, filter_initials=True)
         return result 
     
-    @cached
+
     def _soundex_group2(self, s=None):
         if s is None:
             s = self.guess_normal_form()
@@ -576,7 +544,7 @@ class Name(object):
         s = self.serialize()
         return re.findall('\S+', s)
     
-    @cached
+
     def contains_initials(self):
         """Return True if the name contains initials"""
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS
@@ -586,26 +554,17 @@ class Name(object):
                 return True
         return False
 
-    def compute_attributes_to_cache(self):
-        " Return a list of bound methods that were decorated with @cache"
-        res = {}
-        for method in self._get_methods_to_cache():
-            res[method.__name__] = method()
-        return res
-    def _get_methods_to_cache(self):
-        " Precompute values for methods decorated with @cache"
-        methods_to_cache = []
-        for a in dir(self):
-            attribute = getattr(self, a)
-            if getattr(attribute,'_cache_decorated_method', False):
-                methods_to_cache.append(attribute)
-        return methods_to_cache
-    
-    def set_precomputed_data(self, data):
-        """ Call this method with the return value of compute_attributes_to_cache.
-            After the call, all decorated methods will returned the cached values.
-        """
-        self._cache = data
+    def get_ascii_normal_form(self):
+        return to_ascii(self.guess_normal_form())
+
+    def get_normal_form_soundex(self):
+        return self.soundex_nl(
+            remove_stopwords(self.get_ascii_normal_form()), group=2, length=-1
+        )
+
+    def get_ascii_geslachtsnaam(self):
+        return to_ascii(self.geslachtsnaam())
+
 
 Naam = Name #for backwards compatibility
 
