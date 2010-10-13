@@ -45,6 +45,7 @@ class NameTestCase(unittest.TestCase):
              (Name().from_args(geslachtsnaam='A', volledige_naam='Arien A'), 'A, Arien'),
              (Name('Brugse Meester van 1493'), 'Brugse Meester van 1493'),
              (Name('Th.W. Engelmann'), 'Engelmann, Th.W.'),
+             (Name('A. Algra'), 'Algra, A.'),
              ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
@@ -254,6 +255,7 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(fix_capitals('Johan VIII'), 'Johan VIII')
         self.assertEqual(fix_capitals('Johan III'), 'Johan III')
         self.assertEqual(fix_capitals('Fabricius/Fabritius'), 'Fabricius/Fabritius')
+        self.assertEqual(fix_capitals("L'OYSELEUR") , "l'Oyseleur")
         
     def test_html2unicode(self): 
         s = u'M&ouml;törhead'
@@ -316,7 +318,7 @@ class NameTestCase(unittest.TestCase):
     def test_soundex_nl(self):
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
         n = Name().from_string(s)
-        self.assertEqual(n.soundex_nl(length=5), ['g.rpr', 'j.l'])
+        self.assertEqual(set(n.soundex_nl(length=5)), set(['g.rpr', 'j.l']))
         s ='<persName>Jelle <name type="geslachtsnaam">Scholten</name></persName>'
         
         #now that we have computed the soundex_nl, its value should be cached
@@ -324,10 +326,9 @@ class NameTestCase(unittest.TestCase):
         group=1
         nf = n.guess_normal_form()
         n = Name().from_string(s)
+        
         self.assertEqual(n.soundex_nl(length=5), ['sg.lt', 'j.l'])
-        
-        
-        self.assertEqual(Name('janssen, hendrik').soundex_nl(group=1), ['j.ns', '.ntr'])
+        self.assertEqual(set(Name('janssen, hendrik').soundex_nl(group=1)), set(['j.ns', '.tr.']))
         self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Name('aearssen,walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
         self.assertEqual(Name('Jhr. Mr. K').soundex_nl(), ['k'])

@@ -166,6 +166,16 @@ class NaamSimilarityTestCase(TestCase):
             Name('koning Willem III'), 
             Name('Willem'),
         ])                               
+        
+        self.assert_similarity_order([
+            Name("Pierre de l'Oyseleur dit de Villiers, (hof)predikant"), 
+            Name("L'Oyseleur Dit de Villiers, Pierre "),
+            Name('Villiers, Anne'),
+            Name('Philips'),
+            Name('Willem III'), 
+        ])
+        
+        
         #deze heeft een larger score dan heel veel and
         benchmark =  (Name('Craen, Anna'), Name('Craen, Andrea'))
         benchmark_top =  (Name('Jacob Dirks'), Name('Dirks, Mr. Jacob'))

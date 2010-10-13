@@ -1,9 +1,7 @@
 #! /usr/bin/python    
 #encoding=utf-8
 import unittest
-from unittest import TestCase, TestSuite, main, makeSuite
 from names.name import Name 
-from lxml import etree
 from names.common import *
 from names.soundex import soundex_nl, soundexes_nl
 
@@ -13,7 +11,74 @@ def soundex_nl1(s, length=4):
 def soundex_nl2(s, length=-1):
     return soundex_nl(s, length, group=2)
 
-class SoundexNLTestCase(TestCase):
+SAME_SOUNDEX = [
+        #these names shoudl generate the same soundex expression
+        ('Kluyt', 'kluit'),
+        ('Kluyt,', 'kluit'),
+        ('Kluijt', 'kluit'),
+        ('Gerbrandij', 'Gerbrandy'),
+        ('Eijck', 'ik'),
+        ('Eijck', 'ik'),
+        ('fortuin', 'fortuijn'), 
+        ('fortuyn', 'fortuijn'), 
+        ('kwak','quack'),
+        ('quintus', 'kwintus'),
+        ('riks', 'rix'),
+        ('theodorus', 'teodorus'),
+        ('meijer', 'meyer'),
+        ('meier', 'meyer'),
+        ('mijer', 'meier'),
+        ('wildt', 'wild'), 
+        ('wilt', 'wild'), 
+        ('wilt', 'wild'), 
+        (u'françois', 'fransoys'),
+        (u'éé', 'e'),
+        (u'ouw', u'auw'),
+        (u'ou', u'au'),
+        (u'haer', u'haar'),
+        (u'u', u'uu'),
+        (u'Catharina', 'Katarina'),
+        (u'Catharina', 'Catharine'),
+        (u'Theresa', 'Teresa'),
+        ('Aangenend',
+            'Aangenendt', 
+            'Aangenent', 
+#                'Aengenant', 
+            'Aengenend', 
+            'Aengenendt', 
+            'Aengenent',  
+            'Agenent',
+            'Angeneind', 
+            'Angenend',
+            'Angenendt',
+            'Angenent',
+        ),
+        (
+            'Nooteboom',
+            'Nootenboom',
+            'Noteboom',
+            'Notenboom',
+#                'Neuteboom',
+#                'Neutenboom',
+#                'Notebomer',
+#                'Notenbomer',
+            'Nottebaum',
+            'Nottebohm',
+            'Notteboom',
+#                'Nussbaum',
+#                'Nussbaumer',
+#                'Nuszbaum',
+#                'Nuszbaumer',
+        ), 
+        ('bosma',
+         'boschma',
+         ),
+         ("O'Connor", 'Connor'),
+         ('Ryszard', 'Richard'),
+         (u'Kapuściński', 'Capusinski'),
+        ]
+ 
+class SoundexNLTestCase(unittest.TestCase):
 
     def test_soundex_nl1(self):
         self.assertEqual(soundex_nl1('Scholten', length=5), 'sg.lt')
@@ -39,20 +104,24 @@ class SoundexNLTestCase(TestCase):
         self.assertEqual(soundex_nl1(u'wél'), 'f.l') 
         self.assertEqual(soundex_nl1(u'bosma'), soundex_nl1(u'boschma')) 
         self.assertEqual(Name('Pius IX').soundex_nl(), ['p.s', ])
-
+        for ls in SAME_SOUNDEX:
+            n1 = ls[0]
+            s1 = soundex_nl1(n1)
+            for n2 in ls[1:]:
+                s2 = soundex_nl1(n2)
+                self.assertEqual(s1, s2, '%s=>%s ::: %s=>%s' %( n1, s1, n2, s2))
+ 
     def test_soundex_nl2(self):
         # group 2 is de "fonetische soundex"       
         #c
         for s, wanted in [
-            #examples of soundex expressoins
+            #examples of soundex expressions
+            #the first item of the tuple is the input, the second the expected soundex
             ('Huis', 'huis'),
             ('Huys', 'huis'),
             ('goed', 'got'),
             ('eijck', 'ik'),
             #ei, eij, ij, ey, y, i
-             
-            
-            #
             ('ijck', 'ik'),
             ('ildt', 'ilt'), 
             ('ild', 'ilt'), 
@@ -72,69 +141,7 @@ class SoundexNLTestCase(TestCase):
             
             
         #THESE GET THE SAME SOUNDEXES
-        for ls in [
-            #these names shoudl generate the same soundex expression
-            ('Kluyt', 'kluit'),
-            ('Kluyt,', 'kluit'),
-            ('Kluijt', 'kluit'),
-            ('Gerbrandij', 'Gerbrandy'),
-            ('Eijck', 'ik'),
-            ('Eijck', 'ik'),
-            ('fortuin', 'fortuijn'), 
-            ('fortuyn', 'fortuijn'), 
-            ('kwak','quack'),
-            ('quintus', 'kwintus'),
-            ('riks', 'rix'),
-            ('theodorus', 'teodorus'),
-            ('meijer', 'meyer'),
-            ('meier', 'meyer'),
-            ('mijer', 'meier'),
-            ('wildt', 'wild'), 
-            ('wilt', 'wild'), 
-            ('wilt', 'wild'), 
-            (u'françois', 'fransoys'),
-            (u'éé', 'e'),
-            (u'ouw', u'auw'),
-            (u'ou', u'au'),
-            (u'haer', u'haar'),
-            (u'u', u'uu'),
-            (u'Catharina', 'Katarina'),
-            (u'Catharina', 'Catharine'),
-            ('Aangenend',
-                'Aangenendt', 
-                'Aangenent', 
-#                'Aengenant', 
-                'Aengenend', 
-                'Aengenendt', 
-                'Aengenent',  
-                'Agenent',
-                'Angeneind', 
-                'Angenend',
-                'Angenendt',
-                'Angenent',
-            ),
-            (
-                'Nooteboom',
-                'Nootenboom',
-                'Noteboom',
-                'Notenboom',
-#                'Neuteboom',
-#                'Neutenboom',
-#                'Notebomer',
-#                'Notenbomer',
-                'Nottebaum',
-                'Nottebohm',
-                'Notteboom',
-#                'Nussbaum',
-#                'Nussbaumer',
-#                'Nuszbaum',
-#                'Nuszbaumer',
-            ), 
-            ('bosma',
-             'boschma',
-             ),
-             ("O'Connor", 'Connor'),
-            ]:
+        for ls in SAME_SOUNDEX:
             n1 = ls[0]
             s1 = soundex_nl2(n1)
             for n2 in ls[1:]:
@@ -170,7 +177,7 @@ class SoundexNLTestCase(TestCase):
         bioport_soundex = lambda s: soundexes_nl(s, group=2, length=20, filter_initials=True, filter_stop_words=False)
         self.assertEqual(set(bioport_soundex('Pius IX')), set(['pius', 'IX']))
         
-class IdealWorldNLTestCase(TestCase):
+class IdealWorldNLTestCase(unittest.TestCase):
     """ """
     def test1(self):
         ls_names = (
@@ -509,6 +516,15 @@ class IdealWorldNLTestCase(TestCase):
             ),
         ('Zuilen','Zuijlen','Zuilen',),
         )    
+        
+        #test for soundex_nl1 and soundex_nl2
+        for ls in ls_names:
+            n1 = ls[0]
+            s1 = soundex_nl1(n1)
+            for n2 in ls[1:]:
+                s2 = soundex_nl1(n2)
+                self.assertEqual(s1, s2, '%s=>%s ::: %s=>%s' %( n1, s1, n2, s2))
+
         for ls in ls_names:
             n1 = ls[0]
             s1 = soundex_nl2(n1)
@@ -645,5 +661,5 @@ def test_suite():
         ))
 
 if __name__=='__main__':
-    unittest.main()
+    unittest.main(defaultTest='test_suite')
     

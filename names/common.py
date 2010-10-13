@@ -160,17 +160,19 @@ html_codes = {
      r'&uacute;':r'ue', 
               }
 def fix_capitals(s):
-    """Everything that is an CAPITALS becomes Capitals
-    except romans and TUSSENVOEGSELS
+    """Try to capitalize the name in the right way..
+   s 
     """
     
     result = ''
     
-    for w, rest in re.findall('(\w+)([^\w]*)', s, re.UNICODE):
+    for w, rest in re.findall('(\w+[\']*)([^\w]*)', s, re.UNICODE):
         if w == w.lower():
             pass
         elif w in ROMANS + TUSSENVOEGSELS:
             pass
+        elif w.lower() in PREFIXES:
+            w = w.lower()
         elif u'.' in w:
             pass
         elif w.startswith('IJ'):

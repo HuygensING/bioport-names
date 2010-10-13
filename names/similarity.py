@@ -118,7 +118,13 @@ class Similarity(object):
     def ratio(n1,n2, explain=0, optimize=False):
         """Combine several parameters do find a similarity ratio
         
-        if optimize is True, skip some parts of the algorithm for speed (and sacrifice precision)"""
+        arguments:
+            n1, n2 are Name instances
+        returns:
+            a number between 0 and 1
+            
+            If explain is True, it returns a string that tries to explain the way the value is computed
+	        if optimize is True, skip some parts of the algorithm for speed (and sacrifice precision)"""
         weight_normal_form = 5.0 #distance between soundexes of normal form
         weight_normal_form_soundex = 8.0 #average distance between soundexes of normal form
         weight_geslachtsnaam1 = 10.0 #distance between soundexes of geslachtsnamen

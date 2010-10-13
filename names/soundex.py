@@ -7,28 +7,6 @@ from common import STOP_WORDS, ROMANS, PREFIXES, to_ascii
 #from plone.memoize.ram import cache
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 ROMANS_frozenset = frozenset(ROMANS)
-
-#GROUPS1 defines the 'loose' soundex expression - many words have the same expression
-GROUPS1 = (
-            ('', ['^%s' % s for s in PREFIXES]),
-            ('' ,['[^a-z]', 'en$', '^h']), #alleen alfabetische characters, strip h at start 
-#            ('', [r'^%s' % s for s in PREFIXES + ['h']]), 
-
-            ('.',['ah', 'eh','ij', 'a', 'e', 'i', 'o','u','y',]),
-            ('.', [r'\.+',]	), 
-            ('s',['z', 'ss', '(?<!^)sch']), #match 'sch' except when it is the start of the string 
-            ('p',['b', 'pp']), 
-            ('g',['ch', 'gg']), 
-            ('k',['ck', 'q','kw', 'c', 'x', 'kk']),
-            ('t',['d',  'tt']), #d, dt, tt, dd --> t
-            ('f',['ph', 'v', 'w', 'ff']),
-#            ('h',[]),
-            ('l',['ll']),
-            ('n',['m', 'nn']), 
-            ('r',['rh', 'rr'] ), 
-         #   ('', '1234567890')
-)
-
 #GROUPS2 defines a somewhat stricter soundex expression than GROUPS1 - fewer words have the same expression
 GROUPS2 = (
             ('', ['^%s' % s for s in PREFIXES]),
@@ -45,7 +23,7 @@ GROUPS2 = (
             ('ek', ('ecque$',)),
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
-            ('s',['sz', 'z', 'ss', '(?<!^)sch', 'sch(?=[mnr])',]), #match 'sch' except when it is the start of the string 
+            ('s',['sz', 'z',  '(?<!^)sch', '(?<!^)ssch','sch(?=[mnr])','(?<=[i])ch(?=[aeiou])','sc(?=[aeiou])', 'ss',]), #match 'sch' except when it is the start of the string 
             ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant
             ('', ('(?<=..[bdfgjklmnprstvwzy])e$',)), #e at the aned of a word preceded by a consonant
 #            ('', ('(?<=en)s$',)),
@@ -82,6 +60,17 @@ GROUPS2 = (
             ('au', '6'),
             ('ui', '7'),
 #            ('', '1234567890')
+)
+
+
+#GROUPS1 defines the 'loose' soundex expression - many words have the same expression
+GROUPS1 = GROUPS2 + (
+            ('' ,['^h']), # strip h at start 
+            ('k' ,['q']), #  q becomes k 
+            ('p' ,['b']), #  b becomes p 
+            ('t' ,['d']), #  d becomes t 
+            ('.',['ah', 'eh','ij', 'a', 'e', 'i', 'o','u','y',]), #all consonants go away
+            ('.', [r'\.+',]	), 
 )
 
 #_GROUPS1 = [(k, '|'.join(ls)) for k, ls in GROUPS1]
