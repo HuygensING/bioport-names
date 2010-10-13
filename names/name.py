@@ -147,8 +147,8 @@ class Name(object):
                 #and we provide some robustness by converting it to unicode
                 s = html2unicode(s)
                 element = etree.fromstring(s)
-            else:
-                raise 
+            else:                 
+                raise str(err) + "\nculprit string=" % repr(s)
         self.from_xml(element)
         return self
     
