@@ -335,9 +335,14 @@ class Name(object):
             a substring of s
         """
         name = s
+        if not name:
+            return name
         #anything between brackets is NOT a last name
         #(but we leave the brackets in "Ha(c)ks")
-        name = re.sub(r'(?<!\w)\(.*?\)', '', name)
+        try:
+	        name = re.sub(r'(?<!\w)\(.*?\)', '', name)
+        except:
+            import pdb;pdb.set_trace()
         name = name.strip()
         if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
             guessed_name = name.split(', ')[0] 
@@ -392,15 +397,22 @@ class Name(object):
         return s.strip()
 
     def store_guessed_geslachtsnaam(self):
-        orig_naam = self._root.text
-        guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
-        if guessed_geslachtsnaam:
-            guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
-            el_name = SubElement(self._root, 'name')
-            el_name.set('type','geslachtsnaam')
-            el_name.text = guessed_geslachtsnaam
-            idx = orig_naam.rfind(guessed_geslachtsnaam)
-            self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
+        """Guess the geslachtsnaam, and store the result in the XML representation of the current object
+        
+        """
+        if self.geslachtsnaam():
+            #we already have the last name explicitly stored in the XML, so we dont do anything
+            pass
+        else:
+	        orig_naam = self._root.text
+	        guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
+	        if guessed_geslachtsnaam:
+	            guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
+	            el_name = SubElement(self._root, 'name')
+	            el_name.set('type','geslachtsnaam')
+	            el_name.text = guessed_geslachtsnaam
+	            idx = orig_naam.rfind(guessed_geslachtsnaam)
+	            self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
 
     @cached
     def guess_geslachtsnaam(self, hints=[]):
