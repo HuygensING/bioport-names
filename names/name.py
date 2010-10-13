@@ -588,6 +588,7 @@ class Name(object):
             if getattr(attribute,'_cache_decorated_method', False):
                 methods_to_cache.append(attribute)
         return methods_to_cache
+    
     def set_precomputed_data(self, data):
         """ Call this method with the return value of compute_attributes_to_cache.
             After the call, all decorated methods will returned the cached values.
