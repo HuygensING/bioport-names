@@ -40,7 +40,10 @@ class Name(object):
             self.from_args(**args)
    
     def __str__(self):
-        val = self.volledige_naam()
+        try:
+            val = self.volledige_naam()
+        except AttributeError:
+            return "*uninitialized*"
         if isinstance(val, unicode):
             return val.encode('ascii', 'replace')
         return val
@@ -322,10 +325,7 @@ class Name(object):
             return name
         #anything between brackets is NOT a last name
         #(but we leave the brackets in "Ha(c)ks")
-        try:
-	        name = re.sub(r'(?<!\w)\(.*?\)', '', name)
-        except:
-            import pdb;pdb.set_trace()
+        name = re.sub(r'(?<!\w)\(.*?\)', '', name)
         name = name.strip()
         if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
             guessed_name = name.split(', ')[0] 
