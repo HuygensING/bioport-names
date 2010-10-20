@@ -2,8 +2,8 @@
 #encoding=utf-8
 import unittest
 from names.name import Name 
-from names.common import *
 from names.soundex import soundex_nl, soundexes_nl
+from names.common import TUSSENVOEGSELS
 
 def soundex_nl1(s, length=4):
     return soundex_nl(s, length, group=1)
@@ -167,6 +167,7 @@ class SoundexNLTestCase(unittest.TestCase):
         self.assertEqual(soundexes_nl('willem I' ) , ['filem' ])
         self.assertEqual(soundexes_nl('heer' ) , [])
         self.assertEqual(soundexes_nl('jhr.' ) , [])
+        self.assertEqual(soundexes_nl('van', filter_custom=TUSSENVOEGSELS ) , [])
         
         
     def test_bioport_usecases(self):

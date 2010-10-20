@@ -70,7 +70,7 @@ GROUPS1 = GROUPS2 + (
             ('p' ,['b']), #  b becomes p 
             ('t' ,['d']), #  d becomes t 
             ('.',['ah', 'eh','ij', 'a', 'e', 'i', 'o','u','y',]), #all consonants go away
-            ('.', [r'\.+',]	), 
+            ('.', [r'\.+',]    ), 
 )
 
 #_GROUPS1 = [(k, '|'.join(ls)) for k, ls in GROUPS1]
@@ -83,21 +83,21 @@ GROUPS1 = [(k, re.compile('|'.join(ls))) for k, ls in GROUPS1]
 GROUPS2 = [(k, re.compile('|'.join(ls))) for k, ls in GROUPS2]
 
 def dict_sub(d, text): 
-  """ Replace in 'text' non-overlapping occurences of REs whose patterns are keys
-  in dictionary 'd' by corresponding values (which must be constant strings: may
-  have named backreferences but not numeric ones). The keys must not contain
-  anonymous matching-groups.
-  Returns the new string.""" 
-
-  # Create a regular expression  from the dictionary keys
-  regex = re.compile("|".join("(%s)" % k for k in d))
-  # Facilitate lookup from group number to value
-  lookup = dict((i+1, v) for i, v in enumerate(d.itervalues()))
-
-  # For each match, find which group matched and expand its value
-  return regex.sub(lambda mo: mo.expand(lookup[mo.lastindex]), text)
-
-           
+    """ Replace in 'text' non-overlapping occurences of REs whose patterns are keys
+    in dictionary 'd' by corresponding values (which must be constant strings: may
+    have named backreferences but not numeric ones). The keys must not contain
+    anonymous matching-groups.
+    Returns the new string.""" 
+    
+    # Create a regular expression  from the dictionary keys
+    regex = re.compile("|".join("(%s)" % k for k in d))
+    # Facilitate lookup from group number to value
+    lookup = dict((i+1, v) for i, v in enumerate(d.itervalues()))
+    
+    # For each match, find which group matched and expand its value
+    return regex.sub(lambda mo: mo.expand(lookup[mo.lastindex]), text)
+    
+               
 def multiple_replace(dict, text): 
     """ Replace in 'text' all occurences of any key in the given
     dictionary by its corresponding value.  Returns the new tring.""" 
@@ -118,7 +118,8 @@ def soundexes_nl(s, length=-1, group=2,
     filter_stop_words : filter stop words such as "van" en "of" 
     wildcards: if True, leave '?' and '*' in place
     """
-    
+    if not s:
+        return []
     #splits deze op punten, spaties, kommas, etc
     #ls = re.split('[ \-\,\.]', s.lower())
 #    s = s.lower()
@@ -202,4 +203,3 @@ def apply_regexps(original_string, regexps):
 #    for substitution, regexp in regexps:
 #        result = regexp.sub(substitution, result)
 #    return result
-

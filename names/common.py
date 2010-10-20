@@ -213,10 +213,10 @@ def to_ascii(s):
                 if not ';' in s:
                     pass
                 else:
-	                c, s = s.split(';', 1)
-	                if c in name2codepoint:
-	                    c = name2codepoint[c] 
-	                c = unichr(int(c))
+                    c, s = s.split(';', 1)
+                    if c in name2codepoint:
+                        c = name2codepoint[c] 
+                    c = unichr(int(c))
             try:
                 new_c = special_chars[c]
             except KeyError:

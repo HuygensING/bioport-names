@@ -131,16 +131,21 @@ class Similarity(object):
         weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
         weight_initials = 2 #distance between initials
 
+        #XXX get_ascii_normal_form calls stupidly get_ascii_normal_form 
         nf1 = n1.get_ascii_normal_form()
         nf2 = n2.get_ascii_normal_form()
 
+        if not nf1 or not nf2:
+            return 0.0
+        elif nf1 == nf2:
+            return 1.0
         ratio_normal_form = Similarity.average_distance(split(nf1), split(nf2))
+        
         #create a simkplified soundex set for this name
         #remove stopwords
-        nf1 = remove_stopwords( nf1)
-        nf2 = remove_stopwords( nf2)
+#        nf1 = remove_stopwords( nf1)
+#        nf2 = remove_stopwords( nf2)
         
-        #we use the soundex_nl property of the name, so the property gets cached
         se1 = n1.get_normal_form_soundex()
         se2 = n2.get_normal_form_soundex()
         ratio_normal_form_soundex = Similarity.average_distance( se1, se2)

@@ -1,22 +1,23 @@
 #! /usr/bin/python    
 #encoding=utf-8
 import unittest
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase 
 from names.name import Name
 from names.similarity import Similarity
+from lxml import etree
 
+def ratio(x,y, explain=0):
+    #ratio takes two Name instances anc compares them
+    return Similarity.ratio(x,y, explain)
+    
 class NaamSimilarityTestCase(TestCase):
-    def ratio(self, x,y, explain=0):
-            #ratio takes two Name instances anc compares them
-            return Similarity.ratio(x,y, explain)
+    
     def print_ratio_debug(self, n1, n2):
-        s = '\n%s: %s <-> %s\n%s\n' % ( self.ratio(n1,n2), n1.get_volledige_naam(), n2.get_volledige_naam(), self.ratio(n1, n2, 1)) 
+        s = '\n%s: %s <-> %s\n%s\n' % ( ratio(n1,n2), n1.get_volledige_naam(), n2.get_volledige_naam(), ratio(n1, n2, 1)) 
         return s
+    
     def assert_similarity_order(self,ls):
         """assert that the names in de list are similar in the order given to the first name in the list"""
-        def ratio(x,y, explain=0):
-            #ratio takes two Name instances anc compares them
-            return Similarity.ratio(x,y, explain)
         n0 = ls[0]
         last_name = ls[1]
 
@@ -25,7 +26,7 @@ class NaamSimilarityTestCase(TestCase):
             debug_s += self.print_ratio_debug(n0, last_name)
             debug_s += self.print_ratio_debug(n0, n)
             debug_s = debug_s.encode('latin1')
-            assert self.ratio(n0, last_name) >= ratio(n0, n), debug_s
+            assert ratio(n0, last_name) >= ratio(n0, n), debug_s
 
             last_name = n
   
@@ -38,12 +39,11 @@ class NaamSimilarityTestCase(TestCase):
             return s
         last_score = 1.1
         for n1, n2 in ls:
-            r = self.ratio(n1, n2) 
+            r = ratio(n1, n2) 
         
             
             assert r < last_score, debug_s(ls)
             last_score = r
-            
             
     def test_similarity(self):
         n1 = Name('Jelle Gerbrandy')
@@ -210,10 +210,6 @@ class NaamSimilarityTestCase(TestCase):
             (Name('Johanness Henricus Scholten'), Name('Scholten, J.')),
             benchmark
           ])    
-#        self.assert_more_similar([
-#            (Name(' Margaretha van Godewijcs'), Name('Godewijk, Margaretha')),
-#            benchmark
-#          ])            
         
         self.assert_more_similar([
             (Name('Johannes Steenmeijer'), Name('Steenmeyer, Johannes')),
@@ -250,18 +246,6 @@ class NaamSimilarityTestCase(TestCase):
             (Name(u'Feith, Rhijnvis'), Name('Feith, Johan Adriaan' )), 
         ])   
         
-#        self.assert_more_similar([
-#            (Name(u'Koning-Admirael, Anna'), Name('Anna Admiraal' )), 
-#             benchmark
-#        ])
-#        
-#
-#        self.assert_more_similar([
-#            (Name(u' Anna, gravin van Nassau'), Name('Anna van Nassau')),
-#            benchmark
-#          ])              #XXX
-        #MEER TESTCASES
-   
         #sommelsdijk en zieverwijzingen (=  francois van aerssen)
         #http://magnum.inghist.nl/namenindex/naam/1031229 (bovenste lijkt niet helemaal goed)
         #"prince of wales"
@@ -282,8 +266,20 @@ class NaamSimilarityTestCase(TestCase):
     def test_extremes(self):
         self.assertEqual(Similarity.ratio(Name('XXX'), Name('XXX')), 1.0, Similarity.ratio(Name('XXX'), Name('XXX'), explain=1))
 
-
- 
+    def test_equal(self):
+        n1 = Name('Kees van Dongen')
+        n2 = Name('Dongen, Kees van')
+        self.assertEqual(ratio(n1, n2), 1.0)
+        n1 = Name('Mercier, Camier')
+        n2 = Name('Camier Mercier')
+        self.assertEqual(ratio(n1, n2), 1.0)
+        
+        n1 = etree.fromstring('<persName>Kees van Dongen</persName>')
+        n1 = Name().from_xml(n1)
+        n2 = etree.fromstring('<persName>Dongen, Kees van</persName>')
+        n2 = Name().from_xml(n2)
+        self.assertEqual(ratio(n1, n2), 1.0)
+        
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(NaamSimilarityTestCase),

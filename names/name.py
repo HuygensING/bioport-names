@@ -319,6 +319,8 @@ class Name(object):
         
         returns: 
             a substring of s
+        
+        (XXX: note that this becomes very messy if if the name if "Humbert Humbert")
         """
         name = s
         if not name:
@@ -555,6 +557,8 @@ class Name(object):
         return False
 
     def get_ascii_normal_form(self):
+        #XXX THIS METHOD SHOULD BE RENAMES TO GUESS_NORMAL_FORM, BUT KEEPING IT HERE BECOASE NAMENINDEX_REPOSITORY CACHE DEPENDS ON IT BEING NAMED THUS
+        return self.guess_normal_form()
         return to_ascii(self.guess_normal_form())
 
     def get_normal_form_soundex(self):

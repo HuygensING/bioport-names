@@ -34,6 +34,7 @@ class NameTestCase(unittest.TestCase):
             ('Bonnet-Broederhart. A.G.' , 'Bonnet-Broederhart.' ), 
             ('III' , 'III' ), 
             ('Th.W. Engelmann', 'Engelmann'),
+            ('A Algra', 'Algra'),
 #            ('Auger O' , 'Auger' ), 
             ]:
             guessed = Name(n).guess_geslachtsnaam()
@@ -49,7 +50,11 @@ class NameTestCase(unittest.TestCase):
              ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
-
+        
+        
+        n1 = etree.fromstring('<persName>Kees van Dongen</persName>')
+        n1 = Name().from_xml(n1)
+        self.assertEqual(n1.guess_normal_form(), 'Dongen, Kees van')
 
     def test_html_codes(self):
         n = Name('W&eacute;l?')
