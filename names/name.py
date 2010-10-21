@@ -54,9 +54,6 @@ class Name(object):
     def __eq__(self, other):
         return self.to_string() == other.to_string()
     
-    def x__ne__(self, other):
-        return self.to_string() != other.to_string()
-    
     def from_args(self, **args):
         volledige_naam = args.get('volledige_naam', '')
         self.sort_name = args.get('sort_name', None)
@@ -215,9 +212,18 @@ class Name(object):
     def from_xml(self, element):
         return self.from_element(element)
     
-    def from_element(self, element):
-        """element is een etree.Element instance"""
+    def from_element(self, element, store_guessed_geslachtsnaam=True):
+        """A constructor for Name
+        
+        arguments:
+	        element is een etree.Element instance"
+            store_guessed_geslachtsnaam:  try to guess the alst name, and store it in the result
+            note that this has a default of TRUE
+        XXX: should be decorated as "classmethod"
+        """
         self._root = element
+        if store_guessed_geslachtsnaam:
+            self.store_guessed_geslachtsnaam()
         return self
 
     def get_volledige_naam(self):
