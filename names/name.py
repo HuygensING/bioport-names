@@ -209,8 +209,8 @@ class Name(object):
         
         return self
     
-    def from_xml(self, element):
-        return self.from_element(element)
+    def from_xml(self, element,  store_guessed_geslachtsnaam=True):
+        return self.from_element(element,  store_guessed_geslachtsnaam=store_guessed_geslachtsnaam)
     
     def from_element(self, element, store_guessed_geslachtsnaam=True):
         """A constructor for Name
