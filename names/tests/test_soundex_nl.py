@@ -13,6 +13,7 @@ def soundex_nl2(s, length=-1):
 
 SAME_SOUNDEX = [
         #these names shoudl generate the same soundex expression
+        ('Abraham', 'Abram'),
         ('Kluyt', 'kluit'),
         ('Kluyt,', 'kluit'),
         ('Kluijt', 'kluit'),

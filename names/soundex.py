@@ -35,7 +35,7 @@ GROUPS2 = (
             ('6',['ouw','aauw', 'auw', 'ou', 'au',  ]), #these become 'au' 
             ('5',['ue', 'uu','uh', ]), #these become 'u'
             ('4',['oh', 'oo', 'oe' , ]), #these come 'o' 
-            ('1',['ah', 'ae','aa','a']), #these become 'a' 
+            ('1',['ah', 'ae','a']), #these become 'a' 
             ('3',['eij',  'ey', 'ij', 'ie', 'i',  'y','eei', 'ei', 'ie']), #these become 'i'
             ('2',['ee', 'eh','e', '(?<=.)a$']), #a at the and of a word longer than 1 char) these become 'e'
 #            ('ei', ['eij', 'ey', 'y']), 
@@ -52,13 +52,13 @@ GROUPS2 = (
             ('n',['nn', ]), 
             ('m',['mm']), 
             ('r',['rh', 'rr'] ), 
-            ('a', '1',),
-            ('e', '2'),
-            ('i', '3'),
-            ('o', '4'),
-            ('u', '5'),
-            ('au', '6'),
-            ('ui', '7'),
+            ('a', [r'1+'],),
+            ('e', [r'2+']),
+            ('i', [r'3+']),
+            ('o', [r'4+']),
+            ('u', [r'5+']),
+            ('au',[r'6+']),
+            ('ui', [r'7+']),
 #            ('', '1234567890')
 )
 

@@ -47,15 +47,20 @@ class NameTestCase(unittest.TestCase):
              (Name('Brugse Meester van 1493'), 'Brugse Meester van 1493'),
              (Name('Th.W. Engelmann'), 'Engelmann, Th.W.'),
              (Name('A. Algra'), 'Algra, A.'),
-             ]:
+#             (Name().from_string('<persName>A. Algra</persName>'), 'Algra A.')
+            ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
         
-        
         n1 = etree.fromstring('<persName>Kees van Dongen</persName>')
         n1 = Name().from_xml(n1)
+        self.assertEqual(n1.guess_geslachtsnaam(), 'Dongen')
         self.assertEqual(n1.guess_normal_form(), 'Dongen, Kees van')
 
+        n1 = etree.fromstring('<persName>Dongen, Kees van</persName>')
+        n1 = Name().from_xml(n1)
+        self.assertEqual(n1.guess_normal_form(), 'Dongen, Kees van')
+        
     def test_html_codes(self):
         n = Name('W&eacute;l?')
         n.html2unicode()
@@ -181,6 +186,7 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(naam.guess_normal_form2(), u'Jelle Gerbrandy')
 
         naam = Name(voornaam='Hendrik IV')
+        self.assertEqual(naam.geslachtsnaam(), '')
         self.assertEqual(naam.guess_normal_form(), u'Hendrik IV')
         self.assertEqual(naam.guess_normal_form2(), u'Hendrik IV')
         n = Name().from_string("""<persName>

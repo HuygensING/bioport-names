@@ -209,14 +209,14 @@ class Name(object):
         
         return self
     
-    def from_xml(self, element,  store_guessed_geslachtsnaam=True):
+    def from_xml(self, element,  store_guessed_geslachtsnaam=False):
         return self.from_element(element,  store_guessed_geslachtsnaam=store_guessed_geslachtsnaam)
     
-    def from_element(self, element, store_guessed_geslachtsnaam=True):
+    def from_element(self, element, store_guessed_geslachtsnaam=False):
         """A constructor for Name
         
         arguments:
-	        element is een etree.Element instance"
+            element is een etree.Element instance"
             store_guessed_geslachtsnaam:  try to guess the alst name, and store it in the result
             note that this has a default of TRUE
         XXX: should be decorated as "classmethod"
@@ -247,6 +247,7 @@ class Name(object):
 #            ] if s])
         base = self.guess_normal_form()
         base = base.replace(',', '')
+        base = base.replace('  ', ' ')
         base = base.strip()
         base = base.lower()
         ignore_these = '()'
@@ -404,7 +405,7 @@ class Name(object):
                 el_name.text = guessed_geslachtsnaam
                 idx = orig_naam.rfind(guessed_geslachtsnaam)
                 self._root.text, el_name.tail =  orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):]
-
+    
     def guess_geslachtsnaam(self, hints=[]):
         """Try to guess the geslachtsnaam, and return it
         
@@ -484,21 +485,51 @@ class Name(object):
         except AttributeError:
             self.from_string(self.xml)
             
-        self.guess_geslachtsnaam()
+        #self.guess_geslachtsnaam()
         
         last_name = self.geslachtsnaam()
-        
-        n = self._root
-        if not last_name:
-            s = self.serialize()
-        elif (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text):
+        if last_name:
+            n = self._root
+            if (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text):
+                s = self.serialize()
+            else:
+                rest = self.serialize(exclude=['geslachtsnaam']).strip()
+                if rest:
+                    s = '%s, %s' % (last_name, rest)
+                else:
+                    s = last_name
+        elif list(self._root):
+            #we have no last name, but other sub elemetns - we dont even try to guess here
             s = self.serialize()
         else:
-            rest = self.serialize(exclude=['geslachtsnaam']).strip()
-            if rest:
-                s = '%s, %s' % (last_name, rest)
+            orig_naam = self.serialize()
+            guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, [])
+            if guessed_geslachtsnaam:
+                guessed_geslachtsnaam = guessed_geslachtsnaam.strip()
+    #                el_name = SubElement(self._root, 'name')
+    #                el_name.set('type','geslachtsnaam')
+    #                el_name.text = guessed_geslachtsnaam
+                if orig_naam.startswith(guessed_geslachtsnaam):
+                    s = orig_naam
+                else:
+	                idx = orig_naam.rfind(guessed_geslachtsnaam)
+	                s = '%s, %s %s' % (guessed_geslachtsnaam, orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):])
             else:
-                s = last_name
+                s = self.serialize()
+
+##        
+#        last_name = self.guess_geslachtsnaam()
+#        n = self._root
+#        if not last_name:
+#            s = self.serialize()
+#        elif (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text):
+#            s = self.serialize()
+#        else:
+#            rest = self.serialize(exclude=['geslachtsnaam']).strip()
+#            if rest:
+#                s = '%s, %s' % (last_name, rest)
+#            else:
+#                s = last_name
                 
         s = remove_parenthesized(s)
         result = fix_capitals(s)
@@ -577,4 +608,3 @@ class Name(object):
 
 
 Naam = Name #for backwards compatibility
-

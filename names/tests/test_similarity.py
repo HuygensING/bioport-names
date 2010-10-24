@@ -278,7 +278,18 @@ class NaamSimilarityTestCase(TestCase):
         n1 = Name().from_xml(n1)
         n2 = etree.fromstring('<persName>Dongen, Kees van</persName>')
         n2 = Name().from_xml(n2)
+        self.assertEqual(n1.guess_normal_form(), n2.guess_normal_form())
         self.assertEqual(ratio(n1, n2), 1.0)
+        
+        n3 = etree.fromstring('<persName>Kees van Dongen</persName>')
+        n3 = Name().from_xml(n3, store_guessed_geslachtsnaam=False)    
+        self.assertEqual(ratio(n1, n3), 1.0)
+        self.assertEqual(ratio(n2, n3), 1.0)
+        
+        n1 = Name('Citters, Jacob de Witte van (jhr. mr.)')
+        n2 = Name('Jacob de Witte van Citters')
+        self.assertEqual(ratio(n1, n2), 1.0)
+        
         
 def test_suite():
     return unittest.TestSuite((
