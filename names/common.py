@@ -185,6 +185,10 @@ def fix_capitals(s):
 
 def remove_parenthesized(s):
     """remove everything between parentheses"""
+    
+    #'(xxx)' becomes 'xxx'
+    if s.startswith('(') and s.endswith(')'):
+        s = s[1:-1]
     s = re.sub('\(.*?\)', '', s)
     s = remove_double_spaces(s)
     return s

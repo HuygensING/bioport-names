@@ -114,9 +114,13 @@ def soundexes_nl(s, length=-1, group=2,
      filter_custom=[], #a list of words to ignore
      wildcards=False):
     """return a list of soundexes for each of the words in s
-    
-    filter_stop_words : filter stop words such as "van" en "of" 
-    wildcards: if True, leave '?' and '*' in place
+   
+    arguments:
+        s - a string
+	    filter_stop_words : filter stop words such as "van" en "of" 
+	    wildcards: if True, leave '?' and '*' in place
+	returns:
+	    a list of strings
     """
     if not s:
         return []
