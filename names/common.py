@@ -132,7 +132,10 @@ def coerce_to_encodable(s, encoding):
 
 def html2unicode(s):
     #replace html characters with unicode codepoints
-    for k in name2codepoint.keys():
+    keys = name2codepoint.keys()
+    keys = [k for k in keys if k not in ['amp', 'gt', 'lt']]
+    for k in keys: 
+        
         s = s.replace('&%s;' % k,unichr( name2codepoint[k]))
     return s
 
