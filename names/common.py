@@ -239,6 +239,7 @@ PREFIXES =  [
     r"T'",
     r"'t-",
     r"l'",
+    r"1'", #this is the numer "1" (a typical OCR artefact)
     r"d'",
     r"'", 
     r"o'",
