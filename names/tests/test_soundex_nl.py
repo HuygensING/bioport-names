@@ -33,6 +33,7 @@ SAME_SOUNDEX = [
         ('wilt', 'wild'), 
         ('wilt', 'wild'), 
         (u'françois', 'fransoys'),
+        (u'françois', 'francois'),
         (u'éé', 'e'),
         (u'ouw', u'auw'),
         (u'ou', u'au'),

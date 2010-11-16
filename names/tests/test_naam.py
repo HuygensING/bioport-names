@@ -333,27 +333,16 @@ class NameTestCase(unittest.TestCase):
         s ='<persName>Jelle <name type="geslachtsnaam">Scholten</name></persName>'
         
         #now that we have computed the soundex_nl, its value should be cached
-        length=5
-        group=1
-        nf = n.guess_normal_form()
         n = Name().from_string(s)
         
         self.assertEqual(n.soundex_nl(length=5), ['sg.lt', 'j.l'])
         self.assertEqual(set(Name('janssen, hendrik').soundex_nl(group=1)), set(['j.ns', '.tr.']))
-        self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
-        self.assertEqual(Name('aearssen,walte, lucia van').soundex_nl(group=1), ['.rs', 'f.lt', 'l.k'])
+        self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), Name('aearssen,walte, lucia van').soundex_nl(group=1))
         self.assertEqual(Name('Jhr. Mr. K').soundex_nl(), ['k'])
     
 
     def test_init(self):
-        naam = Name(
-            prepositie=None,
-            voornaam=None,
-            intrapositie=None,
-            geslachtsnaam=None,
-            postpositie=None,
-            volledige_naam=None,
-            )
+        
         naam = Name(
             prepositie=None,
             voornaam=None,
