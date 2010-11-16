@@ -12,11 +12,13 @@ GROUPS2 = (
             ('', ['^%s' % s for s in PREFIXES]),
             ('' ,['[^a-z\?\*]']), # #remove all non-alphabetical characters, 
 #            ('' ,[r'\(', r'\)']),  #remove brackets (
-            ('end', ['eind$',]), #are we sure we ant to do this?
-            ('boom', ['baum'],), #are we sure we want to do this? 
+            ('end', ['eind$',]), #are we sure we want to be this specific?
+            ('boom', ['baum'],), #are we sure that we want to be this specific? 
             ('huis', ['haus'],),
             ('berg', ('burg',)),
             ('woud', ('wold',)),
+            ('jau', ('iau',)),
+            ('o', ('eaux$', )),
             ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
             ('na', ['naar$',]),
             ('', ('(?<=der)s$',)),
