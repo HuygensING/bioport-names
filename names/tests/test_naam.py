@@ -271,8 +271,6 @@ class NameTestCase(unittest.TestCase):
     def test_html2unicode(self): 
         s = u'M&ouml;törhead'
         n = Name(s)
-        self.assertEqual(n.volledige_naam(), s)
-        n.html2unicode()
         self.assertEqual(n.volledige_naam(), u'Mötörhead')
         
         #this shoudl not be here, but under a separate test for the utility functions in common
@@ -308,6 +306,9 @@ class NameTestCase(unittest.TestCase):
         
         n = Name(u'Löwel')
         self.assertTrue(n.sort_key().startswith('lo')), n.sort_key()
+        
+        n = Name("1'Aubepine, Charles de") #this name starts with the numeral "1"
+        self.assertTrue(n.sort_key().startswith('au')), n.sort_key()
         
         s ='<persName>Samuel <name type="geslachtsnaam">Beckett</name></persName>'
         n1 = Name().from_string(s)
