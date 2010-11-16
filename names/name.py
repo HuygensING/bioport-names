@@ -64,7 +64,7 @@ class Name(object):
 
         if volledige_naam:
 
-#            volledige_naam = html2unicode(volledige_naam)
+            volledige_naam = html2unicode(volledige_naam)
             self._root.text = volledige_naam
 #            self._insert_constituent('geslachtsnaam', args.get('geslachtsnaam'))
             for c in self._constituents:
@@ -101,6 +101,7 @@ class Name(object):
         s = html2unicode(s)
         self.from_string(s)
         return self
+    
     def _insert_constituent(self, type, s):
         """tag the substring s of volledige_naam as being of type type
         
