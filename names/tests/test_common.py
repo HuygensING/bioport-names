@@ -10,7 +10,12 @@ class CommonTestCase(unittest.TestCase):
     def test_to_ascii(self):
         self.assertEqual(to_ascii(u'ïéüÀ'), 'ieuA')
         self.assertEqual(to_ascii(u'françois'), 'fransois')
-        
+
+    def test_from_ymd(self):
+        pass
+    def test_to_ymd(self):
+        pass
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(CommonTestCase),

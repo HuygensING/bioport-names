@@ -19,16 +19,16 @@ class NaamSimilarityTestCase(TestCase):
     def assert_similarity_order(self,ls):
         """assert that the names in de list are similar in the order given to the first name in the list"""
         n0 = ls[0]
-        last_name = ls[1]
+        family_name = ls[1]
 
         for n in ls[2:]:
             debug_s = ''
-            debug_s += self.print_ratio_debug(n0, last_name)
+            debug_s += self.print_ratio_debug(n0, family_name)
             debug_s += self.print_ratio_debug(n0, n)
             debug_s = debug_s.encode('latin1')
-            assert ratio(n0, last_name) >= ratio(n0, n), debug_s
+            assert ratio(n0, family_name) >= ratio(n0, n), debug_s
 
-            last_name = n
+            family_name = n
   
     def assert_more_similar(self, ls):
         """assert that the Name pairs in this list are ordered by similairy """

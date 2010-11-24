@@ -248,6 +248,7 @@ PREFIXES =  [
 POSTFIXES = [
    r'cz.',
    r'Cz.',
+   r'Hz.',
    r'jr.',
 ]
 

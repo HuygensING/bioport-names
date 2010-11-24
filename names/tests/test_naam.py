@@ -49,6 +49,7 @@ class NameTestCase(unittest.TestCase):
              (Name('A. Algra'), 'Algra, A.'),
 #             (Name().from_string('<persName>A. Algra</persName>'), 'Algra A.')
              (Name('(G. Morton)'), 'G. Morton'),
+             (Name('Di(e)ck, Jan Gerard'), 'Dick, Jan Gerard')
             ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
@@ -340,8 +341,9 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(set(Name('janssen, hendrik').soundex_nl(group=1)), set(['j.ns', '.tr.']))
         self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), Name('aearssen,walte, lucia van').soundex_nl(group=1))
         self.assertEqual(Name('Jhr. Mr. K').soundex_nl(), ['k'])
-    
-
+	        
+        self.assertEqual(set(Name('janssen, hendrik').soundex_geslachtsnaam()), set([u'j.ns']))
+        
     def test_init(self):
         
         naam = Name(

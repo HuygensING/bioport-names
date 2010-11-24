@@ -452,7 +452,7 @@ class Name(object):
            so we only change the order of the name if we are pretty sure
         """
         n = self._root
-        last_name = self.guess_geslachtsnaam()
+        family_name = self.guess_geslachtsnaam()
         result = self.serialize()
         if (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text and not (n.text and n.text.strip()))  and not R_ROMANS.search(result):
             #if the normal form thing immediate starts with the geslachtsnaam
@@ -463,8 +463,8 @@ class Name(object):
                 result = result[1:].strip()
             result +=  ' '   
             result += serialize(n[0], include_tail=False)
-        elif last_name and self.serialize().startswith(last_name + ','):
-            result = result[len(last_name + ','):].strip() +  ' ' + last_name
+        elif family_name and self.serialize().startswith(family_name + ','):
+            result = result[len(family_name + ','):].strip() +  ' ' + family_name
         else:
             pass
             
@@ -488,17 +488,17 @@ class Name(object):
             
         #self.guess_geslachtsnaam()
         
-        last_name = self.geslachtsnaam()
-        if last_name:
+        family_name = self.geslachtsnaam()
+        if family_name:
             n = self._root
             if (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text):
                 s = self.serialize()
             else:
                 rest = self.serialize(exclude=['geslachtsnaam']).strip()
                 if rest:
-                    s = '%s, %s' % (last_name, rest)
+                    s = '%s, %s' % (family_name, rest)
                 else:
-                    s = last_name
+                    s = family_name
         elif list(self._root):
             #we have no last name, but other sub elemetns - we dont even try to guess here
             s = self.serialize()
@@ -513,24 +513,24 @@ class Name(object):
                 if orig_naam.startswith(guessed_geslachtsnaam):
                     s = orig_naam
                 else:
-	                idx = orig_naam.rfind(guessed_geslachtsnaam)
-	                s = '%s, %s %s' % (guessed_geslachtsnaam, orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):])
+                    idx = orig_naam.rfind(guessed_geslachtsnaam)
+                    s = '%s, %s %s' % (guessed_geslachtsnaam, orig_naam[:idx], orig_naam[idx + len(guessed_geslachtsnaam):])
             else:
                 s = self.serialize()
 
 ##        
-#        last_name = self.guess_geslachtsnaam()
+#        family_name = self.guess_geslachtsnaam()
 #        n = self._root
-#        if not last_name:
+#        if not family_name:
 #            s = self.serialize()
 #        elif (list(n) and n[0].get('type') == 'geslachtsnaam' and not n.text):
 #            s = self.serialize()
 #        else:
 #            rest = self.serialize(exclude=['geslachtsnaam']).strip()
 #            if rest:
-#                s = '%s, %s' % (last_name, rest)
+#                s = '%s, %s' % (family_name, rest)
 #            else:
-#                s = last_name
+#                s = family_name
                 
         s = remove_parenthesized(s)
         result = fix_capitals(s)
@@ -565,13 +565,21 @@ class Name(object):
         else:
             return list(set([a[:length] for a in res]))
 
-
+    def soundex_geslachtsnaam(self, length=4, group=1 ):
+        """return a list of soundex expressions for all parts of the family name"""
+        s = self.geslachtsnaam() 
+        return self.soundex_nl(remove_stopwords(s), group=group, length=length)                    
+        
+    def get_normal_form_soundex(self):
+        return self.soundex_nl(
+            remove_stopwords(self.guess_normal_form()), group=2, length=-1
+        )
+  
     def _soundex_group1(self, s=None):
         if s is None:
             s = self.guess_normal_form()
         result = soundexes_nl(s, group=1, filter_initials=True)
         return result 
-    
 
     def _soundex_group2(self, s=None):
         if s is None:
@@ -579,12 +587,10 @@ class Name(object):
         result = soundexes_nl(s, group=2, filter_initials=True)
         return result 
     
-    
     def _name_parts(self):
         s = self.serialize()
         return re.findall('\S+', s)
     
-
     def contains_initials(self):
         """Return True if the name contains initials"""
         #all parts of the name are initials, except  "geslachtsnaam" or ROMANS or TUSSENVOEGSELS
@@ -598,12 +604,7 @@ class Name(object):
         #XXX THIS METHOD SHOULD BE RENAMES TO GUESS_NORMAL_FORM, BUT KEEPING IT HERE BECOASE NAMENINDEX_REPOSITORY CACHE DEPENDS ON IT BEING NAMED THUS
         return self.guess_normal_form()
         return to_ascii(self.guess_normal_form())
-
-    def get_normal_form_soundex(self):
-        return self.soundex_nl(
-            remove_stopwords(self.get_ascii_normal_form()), group=2, length=-1
-        )
-
+        
     def get_ascii_geslachtsnaam(self):
         return to_ascii(self.geslachtsnaam())
 
