@@ -345,7 +345,7 @@ class Name(object):
             #met een achternaam begint: dan moet het wel de hele string zijn
             guessed_name = name 
         elif re.match('(Th\.|[A-Z]\.)+',name):
-            #als de naam met een initiaal begint, fitleren we alle intiitale er uit, en is de rest de achternaam
+            #als de naa starts with initals, we filter those, and the rest is the family name
             guessed_name = name[re.match('(Th\.|[A-Z]\.)+',name).end():] 
             #guessed_name = re.sub('(Th\.|[A-Z]\.)+','', name) 
         elif ' ' in name:
