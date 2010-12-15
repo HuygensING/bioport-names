@@ -15,6 +15,9 @@ class CommonTestCase(unittest.TestCase):
         pass
     def test_to_ymd(self):
         pass
+    
+    def test_words(self):
+        self.assertEqual(words('Abc d? 1 d223r! (xxx) * Mercier-Camier'), ['Abc', 'd?', '1', 'd223r', 'xxx', '*','Mercier', 'Camier'])
 
 def test_suite():
     return unittest.TestSuite((

@@ -40,6 +40,7 @@ class NameTestCase(unittest.TestCase):
             ]:
             guessed = Name(n).guess_geslachtsnaam()
             self.assertEqual(guessed, wanted_result, '%s "%s"-"%s"' % (n, guessed, wanted_result))
+    
 
     def test_guess_normal_form(self):
         for n, wanted_result in [
@@ -345,7 +346,6 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(set(Name('janssen, hendrik').soundex_nl(group=1)), set(['j.ns', '.tr.']))
         self.assertEqual(Name('aearssen-walte, lucia van').soundex_nl(group=1), Name('aearssen,walte, lucia van').soundex_nl(group=1))
         self.assertEqual(Name('Jhr. Mr. K').soundex_nl(), ['k'])
-	        
         self.assertEqual(set(Name('janssen, hendrik').soundex_geslachtsnaam()), set([u'j.ns']))
         
     def test_init(self):

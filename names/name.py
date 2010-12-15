@@ -8,11 +8,10 @@ from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
 #from similarity import  soundexes_nl
 #from plone.memoize import instance
 from names.soundex import soundexes_nl
-from names.common import R_ROMANS
+from names.common import R_ROMANS, words
 
 import re
 
-wordsplit_re = re.compile('\w+')
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 VOORVOEGSELS_EN_TERRITORIALE_TITELS = frozenset(VOORVOEGSELS + TERRITORIALE_TITELS)
 ROMANS_FROZENSET = frozenset(ROMANS)
@@ -328,7 +327,7 @@ class Name(object):
         returns: 
             a substring of s
         
-        (XXX: note that this becomes very messy if if the name if "Humbert Humbert")
+        (XXX: note that this becomes very messy if  the name is "Humbert Humbert")
         """
         name = s
         if not name:
@@ -337,7 +336,9 @@ class Name(object):
         #(but we leave the brackets in "Ha(c)ks")
         name = re.sub(r'(?<!\w)\(.*?\)', '', name)
         name = name.strip()
-        if ', ' in name: #als er een komma in de name staat, dan is dat wat voor de komma staat de achter
+        if ', ' in name: #if there is a ", " in the name, everything that comes before is the family name
+            #e.g. 'Alighieri, Dante'
+            #(not that this goes wrong with 'John Johnson, MD)'
             guessed_name = name.split(', ')[0] 
         elif ' - ' in name: #a real use case: "Hees - B.P. van"
             guessed_name = name.split(' - ')[0] 
@@ -366,25 +367,28 @@ class Name(object):
         else:
             guessed_name = name 
             
-        #een speciaal geval zijn namen van getrouwde dames, zoals 'Angela Boter-de Groot' 
+        #special case is that of married women, such as 'Angela Boter-de Groot' 
+        #(in which case ??
         if '-' in name:
-            for tussenvoegsel in TUSSENVOEGSELS:
-                if '-%s' % tussenvoegsel in name:
-                    i = name.find('-%s' % tussenvoegsel)
+            for intraposition in TUSSENVOEGSELS:
+                if '-%s' % intraposition in name:
+                    i = name.find('-%s' % intraposition)
                     if i > -1:
                         guessed_name = self._guess_geslachtsnaam_in_string(name[:i], hints) 
                         guessed_name = guessed_name + name[i:] 
         guessed_name = self._strip_tussenvoegels(guessed_name)
+        
 #        for c in '.?,':
 #            if guessed_name.endswith(c): 
 #                guessed_name = guessed_name[:-1]
+
         return guessed_name
         
     def _strip_tussenvoegels(self,s):
         s = s.strip()
-        for tussenvoegsel in TUSSENVOEGSELS:
-            if s.startswith(tussenvoegsel +  ' ' ):
-                s = s[len(tussenvoegsel):]
+        for intraposition in TUSSENVOEGSELS:
+            if s.startswith(intraposition +  ' ' ):
+                s = s[len(intraposition):]
                 s = self._strip_tussenvoegels(s)
                 break
         return s.strip()
@@ -444,7 +448,7 @@ class Name(object):
         guessed_geslachtsnaam = self._guess_geslachtsnaam_in_string(orig_naam, hints)
         return guessed_geslachtsnaam
 
-
+    
     def guess_normal_form2(self):
         """return 'normal form' of the name
            (prepositie voornaam intrapostie geslachstsnaam postpostie)
@@ -539,7 +543,7 @@ class Name(object):
 
     def initials(self):
         s = self.guess_normal_form2() #take ther string with first_name, last_name etc
-        return u''.join(s[0] for s in wordsplit_re.findall(s)
+        return u''.join(s[0] for s in words(s)
                             if s not in STOP_WORDS_frozenset)
 
     def to_xml(self):

@@ -6,6 +6,7 @@ import re
 
 from htmlentitydefs import name2codepoint
 
+wordsplit_re = re.compile('[\w\?\*]+', re.UNICODE)
 
 class TypeChecker:
 
@@ -345,3 +346,16 @@ def remove_stopwords(s):
 
 def remove_tags(s, pattern='<.*?>'):
     return re.sub(pattern, '', s)
+
+def words(s):
+    """returns the 'words' in s
+    
+    words are all white-space o
+    
+    arguments:
+        s is a string
+    returns:
+        a list of strings
+    """
+    
+    return wordsplit_re.findall(s) 

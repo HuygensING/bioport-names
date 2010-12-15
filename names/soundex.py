@@ -3,7 +3,7 @@ try:
 except ImportError:
     import re
 
-from common import STOP_WORDS, ROMANS, PREFIXES, to_ascii
+from common import STOP_WORDS, ROMANS, PREFIXES, to_ascii, words
 #from plone.memoize.ram import cache
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 ROMANS_frozenset = frozenset(ROMANS)
@@ -129,7 +129,7 @@ def soundexes_nl(s, length=-1, group=2,
     #splits deze op punten, spaties, kommas, etc
     #ls = re.split('[ \-\,\.]', s.lower())
 #    s = s.lower()
-    ls = re.findall('[\w\?\*]+', s, re.UNICODE)
+    ls = words(s) 
     
     #filter een aantal stopwoorden
     if filter_stop_words:
