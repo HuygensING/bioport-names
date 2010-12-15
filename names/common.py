@@ -357,5 +357,7 @@ def words(s):
     returns:
         a list of strings
     """
-    
-    return wordsplit_re.findall(s) 
+    if s:
+	    return wordsplit_re.findall(s) 
+    else:
+        return []
