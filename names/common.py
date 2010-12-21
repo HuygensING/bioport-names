@@ -6,7 +6,7 @@ import re
 
 from htmlentitydefs import name2codepoint
 
-wordsplit_re = re.compile('[\w\?\*]+', re.UNICODE)
+wordsplit_re =  re.compile( '[\w\?\*\.]+', re.UNICODE)
 
 class TypeChecker:
 
@@ -251,28 +251,32 @@ POSTFIXES = [
    r'Cz.',
    r'Hz.',
    r'jr.',
-]
-
-VOORVOEGSELS = [
-   r'mr.',
-   r'Mr.',
-   r'dr.',                
-   r'Dr.',
-   r'jhr.',
-   r'prof.',
-   r'Prof.',
-   r'mr',
-   r'Mr',
-   r'dr',                
-   r'Dr',
-   r'jhr',
-   r'Jhr',
-   r'prof',
-   r'Prof',
+   r'sr.',
+   r'Wzn'
+   r'Wzn.'
    
 ]
 
+VOORVOEGSELS = [
+   r'dr',                
+   r'dr.',                
+   r'Dr',
+   r'Dr.',
+   r'jhr',
+   r'jhr.',
+   r'Jhr',
+   r'mr',
+   r'mr.',
+   r'Mr',
+   r'Mr.',
+   r'prof',
+   r'prof.',
+   r'Prof',
+   r'Prof.',
+]
+
 TUSSENVOEGSELS = [
+    r'd\'',
     r'de',
     r'den',
     r'der',
@@ -340,6 +344,7 @@ STOP_WORDS = [] + PREFIXES + VOORVOEGSELS + TUSSENVOEGSELS + POSTFIXES + ROMANS 
 
 R_STOPWORDS = re.compile('|'.join([r'\b%s\b' % w for w in STOP_WORDS]), re.UNICODE | re.IGNORECASE)
 R_ROMANS = re.compile('|'.join(ROMANS))
+R_TUSSENVOEGELS = re.compile('|'.join([r'\b%s\b' % w for w in TUSSENVOEGSELS]))
 
 def remove_stopwords(s):
     return R_STOPWORDS.sub('', s).strip()

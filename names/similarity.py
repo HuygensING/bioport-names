@@ -86,10 +86,10 @@ def levenshtein_ratio(a,b):
 
 # weight_normal_form = 5
 # distance between soundexes of normal form (weight_normal_form / 3)
-weight_normal_form_if_one_name_is_in_initials = 5 / 3
+weight_normal_form_if_one_name_is_in_initials = 4 / 3
 # distance between soundexes of normal form
 # (weight_normal_form_soundex /1.0)
-weight_normal_form_soundex_if_one_name_is_in_initials = 8 /1.0
+weight_normal_form_soundex_if_one_name_is_in_initials = 5/1.0
 # weight_initials * 3.0
 weight_initials_if_one_name_is_in_initials = 2 * 3.0
 # (for example, "A.B Classen")
