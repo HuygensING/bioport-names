@@ -612,9 +612,9 @@ class Name(object):
         """Try to guess as many constituents as possible in the string
         
         returns:
-            an Etree.Element instance
+            a list of Token instances
         side effects:
-            store the result in self._guessed_root
+            cachee the result in self._tokens
         """
         
         try:
@@ -622,14 +622,13 @@ class Name(object):
         except AttributeError:
             pass
         tokens = self._tokenize()
-#        persName = copy.deepcopy(self._root)
-        
-#        text_to_tag = [persName.text] + [n.tail for n in persName]
-#        orig_naam = self._root.text
        
-        #first round - we tag evertyhing that we know for sure  
         _divisor_token = None
         _default_token = None
+        if not tokens:
+            return []
+        
+        #first round - we tag evertyhing that we know for sure  
         for token in tokens:
             w = token.word()
             ctype = token.ctype()
