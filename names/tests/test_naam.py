@@ -484,11 +484,11 @@ class NameTestCase(unittest.TestCase):
         t1 = [('Maurits', 'voornaam'), ('Lodewijk', 'voornaam'), ('van', 'intrapositie'), ('Nassau', 'geslachtsnaam'), ('La', 'geslachtsnaam'), ('Lecq', 'geslachtsnaam')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
-        s1 = 'Mencía de Mendoza y Fonseca'
+        s1 = u'Mencía de Mendoza y Fonseca'
         t1 = [(u'Menc\xeda', 'voornaam'), (u'de', 'intrapositie'), (u'Mendoza', 'geslachtsnaam'), (u'y', 'geslachtsnaam'), (u'Fonseca', 'geslachtsnaam')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
-        s1 = 'Wilhelmina van Pruisen - prinses van Oranje-Nassau'
+        s1 = u'Wilhelmina van Pruisen - prinses van Oranje-Nassau'
         t1 = [('Wilhelmina', 'geslachtsnaam'), ('van', 'intrapositie'), ('Pruisen', 'geslachtsnaam'), ('-', '-'), ('prinses', 'territoriale_titel'), ('van', 'territoriale_titel'), ('Oranje', 'territoriale_titel'), ('-', '-'), ('Nassau', 'territoriale_titel')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
