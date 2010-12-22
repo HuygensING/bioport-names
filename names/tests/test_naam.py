@@ -56,7 +56,7 @@ class NameTestCase(unittest.TestCase):
             (Name(u'Henriette Adriana Louise Flora d\'Oultremont de Wégimont'), u"d'Oultremont de Wégimont, Henriette Adriana Louise Flora"),
             (Name(u'Wolrat, vorst van Nassau-Usingen dikwijls genoemd Nassau-Saarbrück'), u'Wolrat, vorst van Nassau-Usingen dikwijls genoemd Nassau-Saarbrück'),
             (Name(u'van \'s-Gravezande, Arnoldus Corneluszn. Storm'), 's-Gravezande, Arnoldus Corneluszn. Storm, van'),
-            (Name('L.T. graaf van Nassau La Lecq'), ''),
+            (Name('L.T. graaf van Nassau La Lecq'), 'L.T. graaf van Nassau La Lecq'),
             ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
@@ -250,6 +250,10 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
         
         n = Name('Hees - B.P. van (1234-1235)') 
+        self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
+       
+        n = Name('Hoeven, Abraham des Amorie van der (1)')
+        self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
         self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
         
     def test_volledige_naam(self):
@@ -494,7 +498,9 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
         s1 = 'Hendrick graaf van Cuyck'
+        t1 = [('Hendrick', 'geslachtsnaam'), ('graaf', 'territoriale_titel'), ('van', 'territoriale_titel'), ('Cuyck', 'territoriale_titel')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
+        
     def test_tokenize(self):
         s1 ='<persName>Hugo <name type="intrapositie">de</name> <name type="geslachtsnaam">Groot</name></persName>'
         t1 = [Token('Hugo', None, tail=' '), Token('de', 'intrapositie', tail=' '), Token('Groot', 'geslachtsnaam')]
@@ -525,7 +531,7 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(etree.tostring(Name()._detokenize(t5)), s5)
         
         s = '<persName>Beter (met haakjes)</persName>'
-        t = [Token('Beter', None, tail= ' '), Token('(met haakjes)', None)]
+        t = [Token('Beter', None, tail= ' '), Token('(', tail=''), Token('met', tail=' '), Token('haakjes'), Token(')', None)]
         self.assertEqual(Name().from_string(s)._tokenize(), t)
         self.assertEqual(etree.tostring(Name()._detokenize(t)), s)
        

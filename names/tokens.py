@@ -1,6 +1,6 @@
 import re
 
-tokens_re = re.compile('(\(.*?\)|[\w]*[\w\!\?\*\.\']|\,|\-)(\s*)', re.UNICODE)
+tokens_re = re.compile('(\(|\)|[\w]*[\w\!\?\*\.\']|\,|\-)(\s*)', re.UNICODE)
 
 def tokens(s):
     """return list of pairs (word, tail)"""

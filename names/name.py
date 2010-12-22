@@ -448,7 +448,7 @@ class Name(object):
             #
             for i, token in enumerate(tokens):
                 idx = i 
-                if token.ctype() in [TYPE_FAMILYNAME, TYPE_POSTFIX, TYPE_TERRITORIAL]:
+                if token.ctype() in [TYPE_FAMILYNAME, TYPE_POSTFIX]: #, TYPE_TERRITORIAL]:
                     break
                 idx = 0 #did not hit 'break': this one contains no family name or postfix
             result = TokenDict()
@@ -747,8 +747,9 @@ class Name(object):
                     token._ctype = TYPE_GIVENNAME
             
         if '-' in tokens.types():
+            #this case should cover that of married women
             token = [t for t in tokens if t.ctype() == '-'][0]
-            if token.next().ctype() in [TYPE_INTRAPOSITON, TYPE_FAMILYNAME]:
+            if not token.tail() and token.next() and token.next().ctype() in [TYPE_INTRAPOSITON, TYPE_FAMILYNAME] and token.prev() and not token.prev().tail():
                 token.prev()._ctype = TYPE_FAMILYNAME
                 token.next()._ctype = TYPE_FAMILYNAME
                 token._ctype = TYPE_FAMILYNAME
