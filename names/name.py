@@ -10,7 +10,7 @@ from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
                     coerce_to_unicode, remove_stopwords)
 #from similarity import  soundexes_nl
 #from plone.memoize import instance
-from names.soundex import soundexes_nl
+from names.soundex import soundexes_nl, STOP_WORDS_frozenset
 from names.common import R_ROMANS, words, R_TUSSENVOEGELS, wordsplit_re
 from names.tokens import TokenDict,Token, tokens as words
 
@@ -400,26 +400,11 @@ class Name(object):
            NB: we rather simply serialize 'as is' then make a mistake,
            so we only change the order of the name if we are pretty sure
         """
-        n = self._root
-        family_name = self.guess_geslachtsnaam()
-        result = self.serialize()
-        if (list(n) and n[0].get('type') == TYPE_FAMILYNAME and not n.text and not (n.text and n.text.strip()))  and not R_ROMANS.search(result):
-            #if the normal form thing immediate starts with the geslachtsnaam
-            #serialize everything except the geslachtsnaam
-            #and add the geslachtsnaam at the end
-            result = serialize(n, exclude=[TYPE_FAMILYNAME])
-            if result.startswith(','):
-                result = result[1:].strip()
-            result +=  ' '   
-            result += serialize(n[0], include_tail=False)
-        elif family_name and self.serialize().startswith(family_name + ','):
-            result = result[len(family_name + ','):].strip() +  ' ' + family_name
-        else:
-            pass
-            
-        result = remove_parenthesized(result)
-        result = fix_capitals(result)
-        return result
+        tokens = self._guess_normal_form_tokens2()
+        s = tokens.serialize()
+        s = remove_parenthesized(s)
+        s = fix_capitals(s)
+        return s
 
 
     def guess_normal_form(self):
@@ -430,12 +415,14 @@ class Name(object):
         
         cf. also "guess_normal_form2"
         """
-        
-#        try:
-#            self._root
-#        except AttributeError:
-#            self.from_string(self.xml)
-            
+        tokens = self._guess_normal_form_tokens()
+        s = tokens.serialize()
+        s = remove_parenthesized(s)
+        s = fix_capitals(s)
+        s = unicode(s)
+        return s
+    
+    def _guess_normal_form_tokens(self):
         tokens = self._guess_constituent_tokens()
         
         #rearrange tokens
@@ -461,22 +448,55 @@ class Name(object):
             for token in tokens[:idx]: #the first part
                 result.append(token)
         
-        s = result.serialize()
-        s = remove_parenthesized(s)
-        result = fix_capitals(s)
-        return unicode(result)
+        return result
+    
+    def _guess_normal_form_tokens2(self):
+        """
+        returns:
+            a list of tokens in the 'second normal form' - that is first name intrapositions family_name ...
+        """
+        tokens = self._guess_constituent_tokens()
+        idx = 0
+        if tokens[0].ctype() == TYPE_FAMILYNAME:
+            for i, token in enumerate(tokens):
+                if token.ctype() not in [TYPE_FAMILYNAME]:
+                    idx = i
+                    break
+                
+        if idx > 0 and idx < len(tokens):
+            result = TokenDict()
+            if tokens[idx].ctype() not in [',']:
+                result.append(token)
+            for token in tokens[idx+1:]:
+                result.append(token)
+            tokens[-1]._tail =  ' '
+            for token in tokens[:idx]:
+                result.append(token)
+
+        else:
+            result = tokens
+        return result
     
     def initials(self):
-        result = TokenDict()
-        for token in self._guess_constituent_tokens():
-            if token.ctype() == TYPE_GIVENNAME:
-                result.append(token)
-        for token in self._guess_constituent_tokens():
-            if token.ctype() == TYPE_FAMILYNAME:
-                result.append(token)
-        return u''.join([token.word()[0].upper() for token in result if token.word() not in STOP_WORDS_frozenset]) 
-        s = self.guess_normal_form2() #take ther string with first_name, last_name etc
-        return u''.join(s[0] for s in words(s) if s not in STOP_WORDS_frozenset)
+        tokens = self._guess_normal_form_tokens2()
+        result = '' 
+        _in_parenthesis = False
+        for token in tokens:
+            if _in_parenthesis and token.word() == ')':
+                _in_parenthesis = False 
+            elif _in_parenthesis:
+                pass
+            elif token.word() == '(':
+                _in_parenthesis = True
+            elif token.word() in STOP_WORDS_frozenset:
+                pass
+            else:
+                result += token.word()[0].upper()
+        result = unicode(result)
+        return result 
+        result = u''.join([token.word()[0].upper() for token in result if token.word() not in STOP_WORDS_frozenset]) 
+#        s = self.guess_normal_form2() #take ther string with first_name, last_name etc
+#        return u''.join(s[0] for s in words(s) if s not in STOP_WORDS_frozenset)
         
     def to_xml(self):
         """return an etree.Element instance"""
@@ -663,7 +683,7 @@ class Name(object):
                     token._ctype= TYPE_POSTFIX
                 elif w in TERRITORIALE_TITELS:
                     token._ctype = TYPE_TERRITORIAL 
-                    if token.next().word() in ['van']:
+                    if token.next() and token.next().word() in ['van']:
                         #everything of the form "Graaf van ... " becomes of type_territorial
                         token.next()._ctype = TYPE_TERRITORIAL
                         _default_token = TYPE_TERRITORIAL

@@ -234,10 +234,11 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n5.guess_normal_form(), 'Gerbrandy, Piet')
         self.assertEqual(n5.guess_normal_form2(), 'Piet Gerbrandy')
         
-        n6 = Name('Piet Gerbrandy', geslachtsnaam='Piet')
-        n6._tokenize()
-        self.assertEqual(n6.guess_normal_form(), 'Piet Gerbrandy')
-        self.assertEqual(n6.guess_normal_form2(), 'Gerbrandy Piet')
+#        n6 = Name('Piet Gerbrandy', geslachtsnaam='Piet')
+#        n6._tokenize()
+#        self.assertEqual(n6.guess_normal_form(), 'Piet Gerbrandy')
+#        import pdb;pdb.set_trace()
+#        self.assertEqual(n6.guess_normal_form2(), 'Gerbrandy Piet')
         
         n = Name('Hermansz')
         self.assertEqual(n.guess_normal_form(), 'Hermansz')
@@ -253,8 +254,9 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
        
         n = Name('Hoeven, Abraham des Amorie van der (1)')
-        self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
-        self.assertEqual(n.guess_normal_form(), 'Hees - B.P. van')
+        
+        self.assertEqual(n.guess_normal_form(), 'Hoeven, Abraham des Amorie van der')
+        self.assertEqual(n.guess_normal_form2(), 'Abraham des Amorie van der Hoeven')
         
     def test_volledige_naam(self):
         n = Name(voornaam='Jelle')
@@ -334,7 +336,8 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(Name('P. Gerbrandy').initials(), 'PG')
         self.assertEqual(Name('Engelmann, Th.W.').initials(), 'TWE')
         self.assertEqual(Name('Borret, Prof. Dr. Theodoor Joseph Hubert').initials(), 'TJHB')
-
+        self.assertEqual(Name('Hoeven, Abraham des Amorie van der (1)').initials(), u'AAH')
+        
     def test_soundex_nl(self):
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
         n = Name().from_string(s)
@@ -499,6 +502,10 @@ class NameTestCase(unittest.TestCase):
         
         s1 = 'Hendrick graaf van Cuyck'
         t1 = [('Hendrick', 'geslachtsnaam'), ('graaf', 'territoriale_titel'), ('van', 'territoriale_titel'), ('Cuyck', 'territoriale_titel')]
+        self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
+       
+        s1 = 'Hoeven, Abraham des Amorie van der' 
+        t1 = [('Hoeven', 'geslachtsnaam'), (',', ','), ('Abraham', 'voornaam'), ('des', 'intrapositie'), ('Amorie', 'geslachtsnaam'), ('van', 'intrapositie'), ('der', 'intrapositie')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
     def test_tokenize(self):

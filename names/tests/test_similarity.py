@@ -228,6 +228,7 @@ class NaamSimilarityTestCase(TestCase):
             (Name(geslachtsnaam='des Amorie van der Hoeven', voornaam='Abraham'), Name('Hoeven, Abraham des Amorie van der (1)')),
             benchmark
           ])             
+        
         self.assert_more_similar([
            (Name('oldenbarnevelt'), Name('Oldenbarnevelt, dr. Johan van')),   #                        
            benchmark,
