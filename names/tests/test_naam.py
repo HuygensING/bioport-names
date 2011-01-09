@@ -492,15 +492,15 @@ class NameTestCase(unittest.TestCase):
         t1 = [('Wilhelmina', 'geslachtsnaam'), ('van', 'intrapositie'), ('Pruisen', 'geslachtsnaam'), ('-', '-'), ('prinses', 'territoriale_titel'), ('van', 'territoriale_titel'), ('Oranje', 'territoriale_titel'), ('-', '-'), ('Nassau', 'territoriale_titel')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
-        s1 = 'Henriette Adriana Louise Flora d\'Oultremont de Wégimont'
+        s1 = u'Henriette Adriana Louise Flora d\'Oultremont de Wégimont'
         t1 = [(u'Henriette', 'voornaam'), (u'Adriana', 'voornaam'), (u'Louise', 'voornaam'), (u'Flora', 'voornaam'), (u"d'", 'geslachtsnaam'), (u'Oultremont', 'geslachtsnaam'), (u'de', 'intrapositie'), (u'W\xe9gimont', 'geslachtsnaam')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
        
-        s1 = 'Hendrik de Graaf' 
+        s1 = u'Hendrik de Graaf' 
         t1 = [('Hendrik', 'voornaam'), ('de', 'intrapositie'), ('Graaf', 'geslachtsnaam')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
         
-        s1 = 'Hendrick graaf van Cuyck'
+        s1 = u'Hendrick graaf van Cuyck'
         t1 = [('Hendrick', 'geslachtsnaam'), ('graaf', 'territoriale_titel'), ('van', 'territoriale_titel'), ('Cuyck', 'territoriale_titel')]
         self.assertEqual(str(Name(s1)._guess_constituent_tokens()), str(t1))
        
