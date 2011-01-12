@@ -556,9 +556,9 @@ class Name(object):
             if is_initials(token):
                 return True
         return False
-    def get_ascii_normal_form(self):
-        #XXX THIS METHOD SHOULD BE RENAMES TO GUESS_NORMAL_FORM, BUT KEEPING IT HERE BECOASE NAMENINDEX_REPOSITORY CACHE DEPENDS ON IT BEING NAMED THUS
-        return self.guess_normal_form()
+#    def get_ascii_normal_form(self):
+#        #XXX THIS METHOD SHOULD BE RENAMES TO GUESS_NORMAL_FORM, BUT KEEPING IT HERE BECOASE NAMENINDEX_REPOSITORY CACHE DEPENDS ON IT BEING NAMED THUS
+#        return self.guess_normal_form()
 #        return to_ascii(self.guess_normal_form())
         
 #    def get_ascii_geslachtsnaam(self):
