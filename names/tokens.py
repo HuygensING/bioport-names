@@ -12,7 +12,7 @@ def tokens(s):
 
 class Token:
     def __init__(self, word, ctype=None, tail=None):
-        self._word = word
+        self._word = unicode(word)
         self._ctype = ctype
         self._tail = tail
         self._next = self._prev = self._index = None

@@ -79,6 +79,8 @@ SAME_SOUNDEX = [
          ('Ryszard', 'Richard'),
          (u'Kapuściński', 'Capusinski'),
          (u'Kabeljauw', 'Cabeliau'),
+         (u'Christiaans', 'Christiaens'), 
+         (u'Klouk', u'Kloek'),
         ]
  
 class SoundexNLTestCase(unittest.TestCase):
@@ -171,7 +173,9 @@ class SoundexNLTestCase(unittest.TestCase):
         self.assertEqual(soundexes_nl('heer' ) , [])
         self.assertEqual(soundexes_nl('jhr.' ) , [])
         self.assertEqual(soundexes_nl('van', filter_custom=TUSSENVOEGSELS ) , [])
-        
+    
+    def test_if_soundexes_nl_returns_unicode(self):
+        self.assertEqual(type(soundexes_nl('Samuel Beckett')[0]), type(u''))
         
     def test_bioport_usecases(self):
         """in the biographical portal,

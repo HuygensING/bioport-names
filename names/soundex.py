@@ -26,10 +26,11 @@ GROUPS2 = (
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
             ('s',['sz', 'z',  '(?<!^)sch', '(?<!^)ssch','sch(?=[mnr])','(?<=[i])ch(?=[aeiou])','sc(?=[aeiou])', 'ss','(?<=.)c(?=[oi])']), #match 'sch' except when it is the start of the string 
-            ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant
+            ('', ('(?<=..[bdfgjklmnprstvwzy])en$',)), #en at the end of a word that is not too short, preceded by a consonant, is completely ignored
             ('', ('(?<=..[bdfgjklmnprstvwzy])e$',)), #e at the aned of a word preceded by a consonant
 #            ('', ('(?<=en)s$',)),
-            ('', ('(?<=...)ens$',)),
+            ('', ('(?<=..[bdfgjklmnprstvwzy])ens$',)),
+            
             ('', ('(?<=.....)a$',)),
             ('em', ('(?<=.)um$',)),
             ('e', ['en(?=[bdfklmnpqrstvwz][^s].)',]), #tussen -n
@@ -59,7 +60,8 @@ GROUPS2 = (
             ('i', [r'3+']),
             ('o', [r'4+']),
             ('u', [r'5+']),
-            ('au',[r'6+']),
+#            ('au',[r'6+']),
+            ('o',[r'6+']),
             ('ui', [r'7+']),
 #            ('', '1234567890')
 )

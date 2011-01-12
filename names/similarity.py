@@ -131,9 +131,8 @@ class Similarity(object):
         weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
         weight_initials = 2 #distance between initials
 
-        #XXX get_ascii_normal_form calls stupidly get_ascii_normal_form 
-        nf1 = n1.get_ascii_normal_form()
-        nf2 = n2.get_ascii_normal_form()
+        nf1 = n1.get_normal_form()
+        nf2 = n2.get_normal_form()
 
         if not nf1 or not nf2:
             return 0.0
