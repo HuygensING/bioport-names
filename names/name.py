@@ -47,7 +47,7 @@ class Name(object):
         self._root = None #etree.Element object met naamgegevens
         self._guessed_root = None #tree.Element object with the 'guessed' structure
         if naam:
-            args['volledige_naam'] = unicode(naam)
+            args['volledige_naam'] = html2unicode(naam)
         if args:
             self.from_args(**args)
    
@@ -176,64 +176,7 @@ class Name(object):
                 raise str(err) + "\nculprit string=" + repr(s)
         self.from_xml(element)
         return self
-#    
-#    def from_soup(self, s, hints=()):
-#        """if the input is really messy, this function should be more forgivable"""
-#        self.source_string = s
-#        self.birth = None
-#        self.death = None
-#        s = coerce_to_unicode(s)
-#        s = s.strip()
-#        
-#        #gevallen als Jan klaasen (123-345)
-#        #kijk of er jaartallen, tussen haakjes, staan
-#        if s.endswith(')') and s.find('('):
-#            laatste_haakje = s.rfind('(')
-#            
-#            tussen_haakjes = s[laatste_haakje+1:-1]
-#            for splitter in ['-', '\u2011', u'‑']:
-#                if splitter in tussen_haakjes:
-#                    first, last = tussen_haakjes.split(splitter)
-#                    
-#                else:
-#                    first = None
-#                    last = tussen_haakjes
-#                #XXX this is not really finished
-#                if last.isdigit():
-#                    self.birth = first
-#                    self.death = last
-#                    s = s[:laatste_haakje].strip()
-#                for att in ['birth', 'death']:
-#                    d = getattr(self, att)
-#                    if d:
-#                        for c in [u'±']:
-#                            if d.startswith(c):
-#                                    d = s[len(c):]
-#                        if not is_date(d):
-#                            d = None
-#                    setattr(self, att, d)
-#        #territoriale titels
-#        self.territoriale_titel = None
-#        
-#        for t in TERRITORIALE_TITELS:
-#            if t in s:
-#                self.territoriale_titel = s[s.find(t):]
-#                self.territoriale_titel= self.territoriale_titel.strip()
-#                s = s[:s.find(t)]
-#        s = s.strip()
-#        for c in ',;:': 
-#            if s.endswith(c):
-#                s = s[:-len(c)]
-#        s = s.strip()    
-#        
-#        self.from_args(
-#           volledige_naam = s,
-#           # territoriale_titel=territoriale_titel,
-#            )
-#        self.guess_geslachtsnaam(hints=hints)
-#        
-#        return self
-#    
+
     def from_xml(self, element,  store_guessed_geslachtsnaam=False):
         return self.from_element(element,  store_guessed_geslachtsnaam=store_guessed_geslachtsnaam)
     
