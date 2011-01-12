@@ -131,8 +131,8 @@ class Similarity(object):
         weight_geslachtsnaam2 = 10.0 #distance between geslachtsnaam
         weight_initials = 2 #distance between initials
 
-        nf1 = n1.get_normal_form()
-        nf2 = n2.get_normal_form()
+        nf1 = n1.guess_normal_form()
+        nf2 = n2.guess_normal_form()
 
         if not nf1 or not nf2:
             return 0.0
