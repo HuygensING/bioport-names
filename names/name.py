@@ -370,7 +370,7 @@ class Name(object):
         
         #rearrange tokens
         if not tokens:
-            return ''
+            return []
         
         if tokens[0].ctype() == TYPE_FAMILYNAME:
             #if the name already starts with a family name, we assume it to be already normalized
