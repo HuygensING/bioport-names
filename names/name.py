@@ -366,11 +366,14 @@ class Name(object):
         return s
     
     def _guess_normal_form_tokens(self):
+        """
+        returns a TokenDict instance
+        """
         tokens = self._guess_constituent_tokens()
         
         #rearrange tokens
         if not tokens:
-            return []
+            return TokenDict() 
         
         if tokens[0].ctype() == TYPE_FAMILYNAME:
             #if the name already starts with a family name, we assume it to be already normalized
