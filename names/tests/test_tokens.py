@@ -15,6 +15,7 @@ class TokensTestCase(unittest.TestCase):
         self.assertEqual(''.join(['%s%s' % (word, tail) for word, tail in t]), s)
         
         self.assertEqual(tokens('H.P.'),[('H.', ''), ('P.', '')])
+        self.assertEqual(tokens('X&aacute;Y'), [('XáY', '')])
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TokensTestCase),

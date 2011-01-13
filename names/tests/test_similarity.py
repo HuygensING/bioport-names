@@ -243,6 +243,11 @@ class NaamSimilarityTestCase(TestCase):
            benchmark,
            ])
         self.assert_more_similar([
+           (Name('Apostool, C.'),  Name('Cornelis Apostool')),
+           benchmark,
+           ])
+        
+        self.assert_more_similar([
              benchmark_top,
             (Name(u'Feith, Rhijnvis'), Name('Feith, Johan Adriaan' )), 
         ])   

@@ -369,6 +369,9 @@ class Name(object):
         tokens = self._guess_constituent_tokens()
         
         #rearrange tokens
+        if not tokens:
+            return ''
+        
         if tokens[0].ctype() == TYPE_FAMILYNAME:
             #if the name already starts with a family name, we assume it to be already normalized
             result = tokens
