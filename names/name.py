@@ -406,6 +406,8 @@ class Name(object):
         """
         tokens = self._guess_constituent_tokens()
         idx = 0
+        if not tokens:
+            return TokenDict()
         if tokens[0].ctype() == TYPE_FAMILYNAME:
             for i, token in enumerate(tokens):
                 if token.ctype() not in [TYPE_FAMILYNAME]:
@@ -581,7 +583,7 @@ class Name(object):
         """Try to guess as many constituents as possible in the string
         
         returns:
-            a list of Token instances
+            a TokenDict instance
         side effects:
             cachee the result in self._tokens
         """
@@ -595,7 +597,7 @@ class Name(object):
         _divisor_token = None
         _default_token = None
         if not tokens:
-            return []
+            return TokenDict() 
         
         #first round - we tag evertyhing that we know for sure  
         for token in tokens:
