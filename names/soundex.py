@@ -18,6 +18,7 @@ GROUPS2 = (
             ('berg', ('burg',)),
             ('woud', ('wold',)),
             ('jau', ('iau',)),
+            ('ieu', ('ieuw',)),
             ('o', ('eaux$', )),
             ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
             ('na', ['naar$',]),

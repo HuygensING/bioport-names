@@ -81,6 +81,7 @@ SAME_SOUNDEX = [
          (u'Kabeljauw', 'Cabeliau'),
          (u'Christiaans', 'Christiaens'), 
          (u'Klouk', u'Kloek'),
+         (u'Nieuwland', 'Nieuland')
         ]
  
 class SoundexNLTestCase(unittest.TestCase):
