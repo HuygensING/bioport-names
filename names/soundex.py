@@ -23,7 +23,8 @@ GROUPS2 = (
             ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
             ('na', ['naar$',]),
             ('', ('(?<=der)s$',)),
-            ('ek', ('ecque$',)),
+            ('ek', ('ecque$',)), #fransche namen
+            ('elle', ('eille',)),
             ('rs', ('(?<=[aeiou])(rts|rds|rdz|rtz)(?=(e|$|k))',)),
             ('mm', ('(?<=[aeiou])(mb)(?=[e])',)),
             ('s',['sz', 'z',  '(?<!^)sch', '(?<!^)ssch','sch(?=[mnr])','(?<=[i])ch(?=[aeiou])','sc(?=[aeiou])', 'ss','(?<=.)c(?=[oi])']), #match 'sch' except when it is the start of the string 
@@ -35,6 +36,7 @@ GROUPS2 = (
             ('', ('(?<=.....)a$',)),
             ('em', ('(?<=.)um$',)),
             ('e', ['en(?=[bdfklmnpqrstvwz][^s].)',]), #tussen -n
+            ('q', ['kw', 'qu', 'q']),
             ('7',['uy','uij', 'ui', ]), #'(?<=[^o])oij',  '(?<=[^o])oi', ]), 
             ('6',['ouw','aauw', 'auw', 'ou', 'au',  ]), #these become 'au' 
             ('5',['ue', 'uu','uh', ]), #these become 'u'
@@ -46,7 +48,6 @@ GROUPS2 = (
             ('p',['pp']), 
             ('b',['bb']), 
             ('g',[ 'ngh','ch', 'gg', 'gh', 'ng',]), 
-            ('qu', ['kw']),
             ('k',['cks','ck', 'ks','c', 'kx', 'x', 'kk', ]),
             ('t',[ 'tt', 'd$', 'dt$', 'th','d(?=s)','(?<=n)dt','(?<=n)d',]),
             ('d',[ 'dd']),

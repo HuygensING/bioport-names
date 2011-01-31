@@ -81,6 +81,7 @@ SAME_SOUNDEX = [
          (u'Kabeljauw', 'Cabeliau'),
          (u'Christiaans', 'Christiaens'), 
          (u'Klouk', u'Kloek'),
+         (u'Queillerie' , 'Quellerie'), 
          (u'Nieuwland', 'Nieuland')
         ]
  
