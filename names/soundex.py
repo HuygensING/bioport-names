@@ -20,7 +20,7 @@ GROUPS2 = (
             ('jau', ('iau',)),
             ('ieu', ('ieuw',)),
             ('o', ('eaux$', )),
-            ('ng', ['(?<=i)ngk$', '(?<=i)nk$',]), 
+            ('ng', ['(?<=i)ngk$', '(?<=i)nk$','(?<=i)nck'],), 
             ('na', ['naar$',]),
             ('', ('(?<=der)s$',)),
             ('ek', ('ecque$',)), #fransche namen

@@ -57,6 +57,7 @@ class NameTestCase(unittest.TestCase):
             (Name(u'Wolrat, vorst van Nassau-Usingen dikwijls genoemd Nassau-Saarbrück'), u'Wolrat, vorst van Nassau-Usingen dikwijls genoemd Nassau-Saarbrück'),
             (Name(u'van \'s-Gravezande, Arnoldus Corneluszn. Storm'), 's-Gravezande, Arnoldus Corneluszn. Storm, van'),
             (Name('L.T. graaf van Nassau La Lecq'), 'L.T. graaf van Nassau La Lecq'),
+            (Name(u'Géo d\'Aconit'), u'd\'Aconit, Géo'),
             ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
@@ -319,6 +320,9 @@ class NameTestCase(unittest.TestCase):
         
         n = Name("1'Aubepine, Charles de") #this name starts with the numeral "1"
         self.assertTrue(n.sort_key().startswith('au')), n.sort_key()
+        
+        n = Name(u'Géo d\'Aconit')
+        self.assertTrue(n.sort_key().startswith('aco'))
         
         s ='<persName>Samuel <name type="geslachtsnaam">Beckett</name></persName>'
         n1 = Name().from_string(s)
