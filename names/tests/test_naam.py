@@ -238,7 +238,6 @@ class NameTestCase(unittest.TestCase):
 #        n6 = Name('Piet Gerbrandy', geslachtsnaam='Piet')
 #        n6._tokenize()
 #        self.assertEqual(n6.guess_normal_form(), 'Piet Gerbrandy')
-#        import pdb;pdb.set_trace()
 #        self.assertEqual(n6.guess_normal_form2(), 'Gerbrandy Piet')
         
         n = Name('Hermansz')

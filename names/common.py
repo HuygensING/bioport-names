@@ -276,6 +276,8 @@ VOORVOEGSELS = [
 ]
 
 TUSSENVOEGSELS = [
+    u'à',
+    u'\xe0',
     r'd\'',
     r'de',
     r'den',
@@ -342,9 +344,9 @@ TERRITORIALE_TITELS = [
 STOP_WORDS = [] + PREFIXES + VOORVOEGSELS + TUSSENVOEGSELS + POSTFIXES + ROMANS + \
     TERRITORIALE_TITELS
 
-R_STOPWORDS = re.compile('|'.join([r'\b%s\b' % w for w in STOP_WORDS]), re.UNICODE | re.IGNORECASE)
+R_STOPWORDS = re.compile(u'|'.join([r'\b%s\b' % w for w in STOP_WORDS]), re.UNICODE | re.IGNORECASE)
 R_ROMANS = re.compile('|'.join(ROMANS))
-R_TUSSENVOEGELS = re.compile('|'.join([r'\b%s\b' % w for w in TUSSENVOEGSELS]))
+R_TUSSENVOEGELS = re.compile('|'.join([r'\b%s\b' % w for w in TUSSENVOEGSELS]), re.UNICODE)
 
 def remove_stopwords(s):
     return R_STOPWORDS.sub('', s).strip()
