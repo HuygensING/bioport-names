@@ -258,6 +258,10 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(n.guess_normal_form(), 'Hoeven, Abraham des Amorie van der')
         self.assertEqual(n.guess_normal_form2(), 'Abraham des Amorie van der Hoeven')
         
+        n = Name('Schepper, Gerhard Antoni IJssel de')
+        self.assertEqual(n.guess_normal_form(), 'Schepper, Gerhard Antoni IJssel de')
+        
+        
     def test_volledige_naam(self):
         n = Name(voornaam='Jelle')
         self.assertEqual(n.get_volledige_naam(),'Jelle')
@@ -277,6 +281,8 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(fix_capitals('Johan III'), 'Johan III')
         self.assertEqual(fix_capitals('Fabricius/Fabritius'), 'Fabricius/Fabritius')
         self.assertEqual(fix_capitals("L'OYSELEUR") , "l'Oyseleur")
+        self.assertEqual(fix_capitals(u'Schepper, Gerhard Antoni IJssel de'), u'Schepper, Gerhard Antoni IJssel de')
+                         
         
     def test_html2unicode(self): 
         s = u'M&ouml;törhead'

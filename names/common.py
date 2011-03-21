@@ -180,7 +180,7 @@ def fix_capitals(s):
         elif u'.' in w:
             pass
         elif w.startswith('IJ'):
-            w = 'IJ' + s[len('IJ'):]
+            w = 'IJ' + w[len('IJ'):]
         else:
             w = w.capitalize()
         result += w + rest
