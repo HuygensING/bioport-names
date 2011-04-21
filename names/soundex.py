@@ -12,13 +12,15 @@ GROUPS2 = (
             ('', ['^%s' % s for s in PREFIXES]),
             ('' ,['[^a-z\?\*]']), # #remove all non-alphabetical characters, 
 #            ('' ,[r'\(', r'\)']),  #remove brackets (
+            ('jan', ['^johannes$','^johan$',]),
             ('end', ['eind$',]), #are we sure we want to be this specific?
+            ('sz', ['szoon$',]), #are we sure we want to be this specific?
             ('boom', ['baum'],), #are we sure that we want to be this specific? 
             ('huis', ['haus'],),
             ('berg', ('burg',)),
             ('woud', ('wold',)),
             ('jau', ('iau',)),
-            ('ieu', ('ieuw',)),
+            ('ie', ('ieuw','ieu',)),
             ('o', ('eaux$', )),
             ('ng', ['(?<=i)ngk$', '(?<=i)nk$','(?<=i)nck'],), 
             ('na', ['naar$',]),
@@ -36,6 +38,7 @@ GROUPS2 = (
             ('', ('(?<=.....)a$',)),
             ('em', ('(?<=.)um$',)),
             ('e', ['en(?=[bdfklmnpqrstvwz][^s].)',]), #tussen -n
+            ('k', ['cq$', 'ck$', 'q$']),
             ('q', ['kw', 'qu', 'q']),
             ('7',['uy','uij', 'ui', ]), #'(?<=[^o])oij',  '(?<=[^o])oi', ]), 
             ('6',['ouw','aauw', 'auw', 'ou', 'au',  ]), #these become 'au' 
