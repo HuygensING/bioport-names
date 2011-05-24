@@ -8,8 +8,9 @@ from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
                     serialize, remove_parenthesized, html2unicode, to_ascii,
                     POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS, 
                     coerce_to_unicode, remove_stopwords)
-#from similarity import  soundexes_nl
+
 #from plone.memoize import instance
+
 from names.soundex import soundexes_nl, STOP_WORDS_frozenset
 from names.common import R_ROMANS, words, R_TUSSENVOEGELS, wordsplit_re
 from names.tokens import TokenDict,Token, tokens as words
