@@ -14,7 +14,10 @@ class TypeChecker:
         return s.startswith('http://')
     
 def to_ymd(s):
-    """take a string of the form "YYYY-MM-DD" (or "YYYY"), terurn a tuple (year, month, date) of three integers"""
+    """take a string of the form "YYYY-MM-DD" (or "YYYY"), terurn a tuple (year, month, date) of three integers
+    
+    if only 'YYYY' is given, return (year, None, None).
+     (etc.)"""
     if not s:
         return
     if s.startswith('-'):
@@ -365,6 +368,6 @@ def words(s):
         a list of strings
     """
     if s:
-	    return wordsplit_re.findall(s) 
+        return wordsplit_re.findall(s) 
     else:
         return []

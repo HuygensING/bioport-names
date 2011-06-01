@@ -12,7 +12,7 @@ from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
 #from plone.memoize import instance
 
 from names.soundex import soundexes_nl, STOP_WORDS_frozenset
-from names.common import R_ROMANS, words, R_TUSSENVOEGELS, wordsplit_re
+#from names.common import R_ROMANS, R_TUSSENVOEGELS, wordsplit_re
 from names.tokens import TokenDict,Token, tokens as words
 
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
