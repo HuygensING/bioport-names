@@ -6,7 +6,7 @@ import re
 
 from htmlentitydefs import name2codepoint
 
-wordsplit_re =  re.compile( '[\w\?\*\.]+', re.UNICODE)
+wordsplit_re =  re.compile('[\w\?\*]+', re.UNICODE)
 
 class TypeChecker:
 

@@ -183,6 +183,7 @@ class SoundexNLTestCase(unittest.TestCase):
         self.assertEqual(soundexes_nl('heer' ) , [])
         self.assertEqual(soundexes_nl('jhr.' ) , [])
         self.assertEqual(soundexes_nl('van', filter_custom=TUSSENVOEGSELS ) , [])
+        self.assertEqual(soundexes_nl('annie m.g. schmidt', ) , [u'm',u'ani', u'g', u'smit'])
     
     def test_if_soundexes_nl_returns_unicode(self):
         self.assertEqual(type(soundexes_nl('Samuel Beckett')[0]), type(u''))

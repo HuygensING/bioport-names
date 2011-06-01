@@ -18,6 +18,7 @@ class CommonTestCase(unittest.TestCase):
     
     def test_words(self):
         self.assertEqual(words('Abc d? 1 d223r! (xxx) * Mercier-Camier'), ['Abc', 'd?', '1', 'd223r', 'xxx', '*','Mercier', 'Camier'])
+        self.assertEqual(words('a.b.c.'), ['a', 'b', 'c'])
 
 def test_suite():
     return unittest.TestSuite((
