@@ -517,6 +517,10 @@ class NameTestCase(unittest.TestCase):
         t1 = [('Hoeven', 'geslachtsnaam'), (',', ','), ('Abraham', 'voornaam'), ('des', 'intrapositie'), ('Amorie', 'geslachtsnaam'), ('van', 'intrapositie'), ('der', 'intrapositie')]
         self.assertEqual(Name(s1)._guess_constituent_tokens(), t1)
         
+        s1 = 'Schwartzenberg, Johan Onuphrius thoe'
+        t1 = [('Schwartzenberg', 'geslachtsnaam'), (',', ','), ('Johan', 'voornaam'),('Onuphrius', 'voornaam'), ('thoe', 'intrapositie')]
+        self.assertEqual(Name(s1)._guess_constituent_tokens(), t1)
+        
     def test_tokenize(self):
         s1 ='<persName>Hugo <name type="intrapositie">de</name> <name type="geslachtsnaam">Groot</name></persName>'
         t1 = [Token('Hugo', None, tail=' '), Token('de', 'intrapositie', tail=' '), Token('Groot', 'geslachtsnaam')]

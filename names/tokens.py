@@ -5,7 +5,7 @@ tokens_re = re.compile('(\(|\)|[\w]*[\w\!\?\*\.\']|\,|\-)(\s*)', re.UNICODE)
 def tokens(s):
     """return list of pairs (word, tail)"""
     if s:
-	    return tokens_re.findall(s)
+        return tokens_re.findall(s)
     else:
         return []
     
@@ -18,7 +18,8 @@ class Token:
         self._next = self._prev = self._index = None
         
     def __repr__(self):
-        return str((self.word(), self.ctype()))
+        return unicode((self.word(), self.ctype()))
+        return '<Token %s - %s>' % (self.word(), self.ctype())
     def next(self):
         return self._next 
     def prev(self):

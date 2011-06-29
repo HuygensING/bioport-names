@@ -296,6 +296,7 @@ TUSSENVOEGSELS = [
     r'of',
     r'van',
     r'ten', 
+    r'thoe', 
     r'tot', 
     r"'t",
 ]

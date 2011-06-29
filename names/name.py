@@ -550,14 +550,9 @@ class Name(object):
             w = token.word()
             ctype = token.ctype()
             #insert a space before
-#            if w not in ',-':
-#                if new_el is None:
-#                    if persName.text:
-#                        persName.text += ' '
-#                else:
-#                    new_el.tail +=  ' ' 
+
             if ctype not in self._constituents:
-                #we have an unknown type, and jus add the text to the XML
+                #we have an unknown type, and just add the text to the XML
                 if new_el is None: #if we have a subelement, we add it to the tail of the elmeent
                     if persName.text:
                         persName.text += '%s%s' % (w, token.tail())
