@@ -109,9 +109,9 @@ class Similarity(object):
     def average_distance(l1, l2, distance_function=None): 
         return average_distance(l1, l2, distance_function)
 
-    def _ratio_cache_key(func, n1, n2, explain=0, optimize=False):
-        keyargs = (n1.to_string(), n2.to_string(), explain, optimize)
-        return ('%s:%s:%s:%i' % keyargs).encode('utf8')
+#    def _ratio_cache_key(func, n1, n2, explain=0, optimize=False):
+#        keyargs = (n1.to_string(), n2.to_string(), explain, optimize)
+#        return ('%s:%s:%s:%i' % keyargs).encode('utf8')
 
     @staticmethod
     #@cache(_ratio_cache_key)
