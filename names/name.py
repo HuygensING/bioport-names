@@ -7,11 +7,12 @@ from lxml.etree import Element, SubElement
 from common import (STOP_WORDS, TUSSENVOEGSELS, ROMANS, PREFIXES,
                     serialize, remove_parenthesized, html2unicode, to_ascii,
                     POSTFIXES, fix_capitals, VOORVOEGSELS, TERRITORIALE_TITELS, 
-                    coerce_to_unicode, remove_stopwords)
+#                    coerce_to_unicode, 
+                    remove_stopwords)
 
 #from plone.memoize import instance
 
-from names.soundex import soundexes_nl, STOP_WORDS_frozenset
+from names.soundex import soundexes_nl 
 #from names.common import R_ROMANS, R_TUSSENVOEGELS, wordsplit_re
 from names.tokens import TokenDict,Token, tokens as words
 
@@ -166,13 +167,13 @@ class Name(object):
         s = s.replace('\n', ' ')
         s = s.strip()
         try:
-            element =  etree.fromstring(s)
-        except etree.XMLSyntaxError, err:
+            element =  etree.fromstring(s) #@UndefinedVariable
+        except etree.XMLSyntaxError, err: #@UndefinedVariable
             if 'Entity' in err.message:
                 #the string contains HTML Entities (probably)
                 #and we provide some robustness by converting it to unicode
                 s = html2unicode(s)
-                element = etree.fromstring(s)
+                element = etree.fromstring(s) #@UndefinedVariable
             else:                 
                 raise str(err) + "\nculprit string=" + repr(s)
         self.from_xml(element)
@@ -458,7 +459,7 @@ class Name(object):
         return self._root
 
     def to_string(self):
-        s = etree.tounicode(self.to_xml(), pretty_print=True)
+        s = etree.tounicode(self.to_xml(), pretty_print=True) #@UndefinedVariable
         s = unicode(s)
         s = s.strip()
         return s
@@ -544,7 +545,7 @@ class Name(object):
             
         XXX: might want to move this funcion to TokenDict
         """
-        persName = etree.Element('persName')
+        persName = etree.Element('persName') #@UndefinedVariable
         new_el = None
         for i, token in enumerate(tokens):
             w = token.word()
@@ -569,7 +570,7 @@ class Name(object):
                     new_el.text += token.prev().tail() + token.word() 
                     new_el.tail = token.tail()
                 else:
-                    new_el = etree.SubElement(persName, 'name')
+                    new_el = etree.SubElement(persName, 'name')#@UndefinedVariable
                     new_el.text = w
                     new_el.set('type', ctype)
                     new_el.tail = token.tail() 
