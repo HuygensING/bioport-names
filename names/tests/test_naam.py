@@ -58,6 +58,7 @@ class NameTestCase(unittest.TestCase):
             (Name(u'van \'s-Gravezande, Arnoldus Corneluszn. Storm'), 's-Gravezande, Arnoldus Corneluszn. Storm, van'),
             (Name('L.T. graaf van Nassau La Lecq'), 'L.T. graaf van Nassau La Lecq'),
             (Name(u'Géo d\'Aconit'), u'd\'Aconit, Géo'),
+            (Name(u'J. Heemskerk Azn.'), u'Heemskerk Azn., J.'),
             ]:
             guessed = n.guess_normal_form()
             self.assertEqual(guessed, wanted_result)
@@ -65,12 +66,12 @@ class NameTestCase(unittest.TestCase):
 
         self.assertEqual(Name('Hendrik ten Brink Hz.').guess_normal_form(), 'Brink Hz., Hendrik ten'),
     
-        n1 = etree.fromstring('<persName>Kees van Dongen</persName>')
+        n1 = etree.fromstring('<persName>Kees van Dongen</persName>') #@UndefinedVariable
         n1 = Name().from_xml(n1)
         self.assertEqual(n1.guess_geslachtsnaam(), 'Dongen')
         self.assertEqual(n1.guess_normal_form(), 'Dongen, Kees van')
 
-        n1 = etree.fromstring('<persName>Dongen, Kees van</persName>')
+        n1 = etree.fromstring('<persName>Dongen, Kees van</persName>') #@UndefinedVariable
         n1 = Name().from_xml(n1)
         self.assertEqual(n1.guess_normal_form(), 'Dongen, Kees van')
         
@@ -141,14 +142,14 @@ class NameTestCase(unittest.TestCase):
         
     def test_diacritics(self):
         n = Name(u'Wét').store_guessed_geslachtsnaam()
-        el = etree.Element('test')
+        el = etree.Element('test') #@UndefinedVariable
         el.text = u'Wét'
         s = u'<persName><name type="geslachtsnaam">W\xe9t</name></persName>'
         self.assertEqual(n.to_string(), s)
 
     def test_serialize(self):
         s = '<a>a<b>b</b> c</a>'
-        self.assertEqual(Name().serialize(etree.fromstring(s)), 'ab c')
+        self.assertEqual(Name().serialize(etree.fromstring(s)), 'ab c') #@UndefinedVariable
 
         s ='<persName>Jelle <name type="geslachtsnaam">Gerbrandy</name></persName>'
         naam = Name().from_string(s)
@@ -415,32 +416,31 @@ class NameTestCase(unittest.TestCase):
         #name of the form family_name, given_name 
         s1 ='<persName><name type="geslachtsnaam">Beckett</name>, <name type="voornaam">Samuel</name></persName>'
         s2 ='Beckett, Samuel'
-        self.assertEqual(etree.tostring(Name(s2)._guess_constituents()), s1)
+        self.assertEqual(etree.tostring(Name(s2)._guess_constituents()), s1) #@UndefinedVariable
         
         #test round trip
-        self.assertEqual(etree.tostring(Name().from_string(s1)._guess_constituents()), s1)
-        
+        self.assertEqual(etree.tostring(Name().from_string(s1)._guess_constituents()), s1) #@UndefinedVariable
         
         #a simple normal name
         s1 ='<persName><name type="voornaam">Samuel</name> <name type="geslachtsnaam">Beckett</name></persName>'
         s2 ='Samuel Beckett'
-        self.assertEqual(etree.tostring(Name(s2)._guess_constituents()), s1)
+        self.assertEqual(etree.tostring(Name(s2)._guess_constituents()), s1) #@UndefinedVariable
        
         #test round trip
-        self.assertEqual(etree.tostring(Name().from_string(s1)._guess_constituents()), s1)
+        self.assertEqual(etree.tostring(Name().from_string(s1)._guess_constituents()), s1) #@UndefinedVariable
 
         #intrapositions 
         s1 ='Hugo de Groot'
         s2 ='<persName><name type="voornaam">Hugo</name> <name type="intrapositie">de</name> <name type="geslachtsnaam">Groot</name></persName>'
-        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2)
+        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2) #@UndefinedVariable
 
         s1 = 'Marie Bakker-de Groot'
         s2 ='<persName><name type="voornaam">Marie</name> <name type="geslachtsnaam">Bakker-de Groot</name></persName>'
-        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2)
+        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2) #@UndefinedVariable
         
         s1 = 'Arien A'
         s2 ='<persName><name type="voornaam">Arien</name> <name type="geslachtsnaam">A</name></persName>'
-        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2)
+        self.assertEqual(etree.tostring(Name(s1)._guess_constituents()), s2) #@UndefinedVariable
     
     def test_insert_consituent(self):
         s1 ='<persName>Hugo <name type="intrapositie">de</name> <name type="geslachtsnaam">Groot</name></persName>'
@@ -544,16 +544,16 @@ class NameTestCase(unittest.TestCase):
         self.assertEqual(Name().from_string(s4)._tokenize(), t4)
         self.assertEqual(Name().from_string(s5)._tokenize(), t5)
        
-        self.assertEqual(etree.tostring(Name()._detokenize(t1)), s1)
-        self.assertEqual(etree.tostring(Name()._detokenize(t2)), s2)
-        self.assertEqual(etree.tostring(Name()._detokenize(t3)), s3)
-        self.assertEqual(etree.tostring(Name()._detokenize(t4)), s4)
-        self.assertEqual(etree.tostring(Name()._detokenize(t5)), s5)
+        self.assertEqual(etree.tostring(Name()._detokenize(t1)), s1) #@UndefinedVariable
+        self.assertEqual(etree.tostring(Name()._detokenize(t2)), s2) #@UndefinedVariable
+        self.assertEqual(etree.tostring(Name()._detokenize(t3)), s3) #@UndefinedVariable
+        self.assertEqual(etree.tostring(Name()._detokenize(t4)), s4) #@UndefinedVariable
+        self.assertEqual(etree.tostring(Name()._detokenize(t5)), s5) #@UndefinedVariable
         
         s = '<persName>Beter (met haakjes)</persName>'
         t = [Token('Beter', None, tail= ' '), Token('(', tail=''), Token('met', tail=' '), Token('haakjes'), Token(')', None)]
         self.assertEqual(Name().from_string(s)._tokenize(), t)
-        self.assertEqual(etree.tostring(Name()._detokenize(t)), s)
+        self.assertEqual(etree.tostring(Name()._detokenize(t)), s) #@UndefinedVariable
        
         s = '<persName>C.H.Veenstra</persName>'
         t = [Token('C.', None), Token('H.', None), Token('Veenstra', None)]
