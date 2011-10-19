@@ -48,6 +48,10 @@ def to_ymd(s):
 def from_ymd(y, m=None, d=None):
     """take a year y, a month m or a d (all integers, or strings represeting integers) and return a stirng in the form "YYYY-MM-DD"
     """
+    if not y:
+        return ''
+    if not unicode(y).isdigit():
+        raise TypeError("The argument 'y' must be a number (not %s)" % y)
     if str(y).startswith('-'):
         y = '-' + str(y)[1:].zfill(4)
     if y and m and d:
@@ -56,6 +60,33 @@ def from_ymd(y, m=None, d=None):
         return '%s-%s' % (str(y).zfill(4), str(m).zfill(2))
     elif y:
         return '%s' % (str(y).zfill(4))
+
+def prettifydate(s, lang='nl'):
+    """takes a data in normal form (yyyy-mm-dd) and returns a prettier string"""
+    y, m, d = to_ymd(s)
+    months = [
+        'januari',
+        'februari',
+        'maart',
+        'april',
+        'mei',
+        'juni',
+        'juli',
+        'augustus',
+        'september',
+        'oktober',
+        'november',
+        'december',
+    ]
+    if m: 
+        mm = months[int(m) -1]
+    if d:
+        return '%s %s %s' % (d, mm, y)
+    elif m:
+        return '%s %s' % (mm, y)
+    else:
+        return '%s' % y
+        
     
 def coerce_to_unicode(s):
     if type(s) in (type(u''),):
