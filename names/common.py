@@ -63,6 +63,8 @@ def from_ymd(y, m=None, d=None):
 
 def prettifydate(s, lang='nl'):
     """takes a data in normal form (yyyy-mm-dd) and returns a prettier string"""
+    if not s:
+        return s
     y, m, d = to_ymd(s)
     months = [
         'januari',
