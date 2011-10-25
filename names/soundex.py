@@ -8,15 +8,17 @@ from common import STOP_WORDS, ROMANS, PREFIXES, to_ascii, words
 STOP_WORDS_frozenset = frozenset(STOP_WORDS)
 ROMANS_frozenset = frozenset(ROMANS)
 #GROUPS2 defines a somewhat stricter soundex expression than GROUPS1 - fewer words have the same expression
-GROUPS2 = (
+_GROUPS2 = (
             ('', ['^%s' % s for s in PREFIXES]),
             ('' ,['[^a-z\?\*]']), # #remove all non-alphabetical characters, 
 #            ('' ,[r'\(', r'\)']),  #remove brackets (
             ('jan', ['^johannes$','^johan$',]),
             ('end', ['eind$',]), #are we sure we want to be this specific?
             ('sz', ['szoon$',]), #are we sure we want to be this specific?
+            ('tjes', ['tges$',]), 
+            ('uut', ['^wt',]), 
             ('boom', ['baum'],), #are we sure that we want to be this specific? 
-            ('huis', ['haus'],),
+            ('huis', ['haus', 'husius$'],),
             ('berg', ('burg',)),
             ('woud', ('wold',)),
             ('jau', ('iau',)),
@@ -40,6 +42,7 @@ GROUPS2 = (
             ('e', ['en(?=[bdfklmnpqrstvwz][^s].)',]), #tussen -n
             ('k', ['cq$', 'ck$', 'q$']),
             ('q', ['kw', 'qu', 'q']),
+            ('ute', ['^uite', '^uyte']), #not so sure about the generality of this
             ('7',['uy','uij', 'ui', ]), #'(?<=[^o])oij',  '(?<=[^o])oi', ]), 
             ('6',['ouw','aauw', 'auw', 'ou', 'au',  ]), #these become 'au' 
             ('5',['ue', 'uu','uh', ]), #these become 'u'
@@ -73,7 +76,7 @@ GROUPS2 = (
 
 
 #GROUPS1 defines the 'loose' soundex expression - many words have the same expression
-GROUPS1 = GROUPS2 + (
+_GROUPS1 = _GROUPS2 + (
             ('' ,['^h']), # strip h at start 
             ('k' ,['q']), #  q becomes k 
             ('p' ,['b']), #  b becomes p 
@@ -88,8 +91,8 @@ GROUPS1 = GROUPS2 + (
 #GROUPS2_SINGLEREGEXP = re.compile('|'.join(["(%s)" % v for k, v in _GROUPS2]))
 #GROUPS1_LOOKUP = dict((i+1, k) for (i, (k,v)) in enumerate(GROUPS1))
 #GROUPS2_LOOKUP = dict((i+1, k) for (i, (k,v)) in enumerate(GROUPS2))
-GROUPS1 = [(k, re.compile('|'.join(ls))) for k, ls in GROUPS1]
-GROUPS2 = [(k, re.compile('|'.join(ls))) for k, ls in GROUPS2]
+GROUPS1 = [(k, re.compile('|'.join(ls))) for k, ls in _GROUPS1]
+GROUPS2 = [(k, re.compile('|'.join(ls))) for k, ls in _GROUPS2]
 
 def dict_sub(d, text): 
     """ Replace in 'text' non-overlapping occurences of REs whose patterns are keys
