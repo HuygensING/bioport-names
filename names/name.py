@@ -1,6 +1,5 @@
 # coding=utf-8
 import re
-import copy
 import types
 from lxml import etree 
 from lxml.etree import Element, SubElement
