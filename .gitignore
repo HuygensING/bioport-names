@@ -1,0 +1,5 @@
+.svn/
+names/.svn/
+names.egg-info/
+*.swp
+*.pyc
