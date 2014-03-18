@@ -1,5 +1,8 @@
-.svn/
-names/.svn/
-names.egg-info/
-*.swp
 *.pyc
+*.swp
+.project
+.pydevproject
+.svn/
+.settings/
+names.egg-info/
+names/.svn/
