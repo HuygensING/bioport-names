@@ -6,3 +6,5 @@
 .settings/
 names.egg-info/
 names/.svn/
+*.egg
+build/
