@@ -1,3 +1,4 @@
+# coding=utf-8
 ##########################################################################
 # Copyright (C) 2009 - 2014 Huygens ING & Gerbrandy S.R.L.
 # 
@@ -18,7 +19,6 @@
 # <http://www.gnu.org/licenses/gpl-3.0.html>.
 ##########################################################################
 
-# coding=utf-8
 import re
 import types
 from lxml import etree 
